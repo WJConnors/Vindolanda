@@ -2,9 +2,12 @@
 
 
 #include "ControllerPawn.h"
-#include <Components/CapsuleComponent.h>
-#include <GameFramework/SpringArmComponent.h>
-#include <Camera/CameraComponent.h>
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
+#include "Camera/CameraComponent.h"
+#include "InputActionValue.h"
+#include "EnhancedInputComponent.h"
 
 // Sets default values
 AControllerPawn::AControllerPawn()
@@ -21,6 +24,8 @@ AControllerPawn::AControllerPawn()
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	camera->SetupAttachment(springArm, USpringArmComponent::SocketName);
 
+	floatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingMovement"));
+
 }
 
 // Called when the game starts or when spawned
@@ -28,6 +33,23 @@ void AControllerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void AControllerPawn::Move(const FInputActionValue& value)
+{
+	const FVector2D movementInput = value.Get<FVector2D>();
+	if (Controller)
+	{
+		const FRotator rotation = Controller->GetControlRotation();
+		const FRotator yawRotation(0, rotation.Yaw, 0);
+
+		const FVector forward = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::X);
+		const FVector right = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::Y);
+
+		AddMovementInput(forward, movementInput.Y);
+		AddMovementInput(right, movementInput.X);
+	}
+
 }
 
 // Called every frame
@@ -41,6 +63,11 @@ void AControllerPawn::Tick(float DeltaTime)
 void AControllerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	if (TObjectPtr<UEnhancedInputComponent> enhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		enhancedInputComponent->BindAction(moveAction, ETriggerEvent::Triggered, this, &AControllerPawn::Move);
+	}
 
 }
 

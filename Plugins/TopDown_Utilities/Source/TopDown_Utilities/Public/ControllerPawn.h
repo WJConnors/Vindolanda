@@ -10,6 +10,9 @@
 class UCapsuleComponent;
 class USpringArmComponent;
 class UCameraComponent;
+class UInputAction;
+struct FInputActionValue;
+class UFloatingPawnMovement;
 
 UCLASS()
 class TOPDOWN_UTILITIES_API AControllerPawn : public APawn
@@ -26,6 +29,12 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> camera;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> moveAction;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UFloatingPawnMovement> floatingPawnMovement;
+
 public:
 	// Sets default values for this pawn's properties
 	AControllerPawn();
@@ -33,6 +42,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void Move(const FInputActionValue& value);
 
 public:	
 	// Called every frame
