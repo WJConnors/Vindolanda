@@ -3,6 +3,9 @@
 
 #include "TopDownPlayerController.h"
 #include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
+#include "EnhancedInputComponent.h"
+#include "BasePawn.h"
 
 ATopDownPlayerController::ATopDownPlayerController()
 {
@@ -15,8 +18,36 @@ void ATopDownPlayerController::SetupInputComponent()
 
 	if (!defaultInputMappingContext) { return; }
 
-	TObjectPtr<UEnhancedInputLocalPlayerSubsystem> Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
 
 	if (Subsystem) { Subsystem->AddMappingContext(defaultInputMappingContext, 0); }
 
+	if (UEnhancedInputComponent* enhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
+	{
+		enhancedInputComponent->BindAction(selectAction, ETriggerEvent::Completed, this, &ATopDownPlayerController::SelectAction);
+	}
+
+}
+
+void ATopDownPlayerController::SelectAction(const FInputActionValue& value)
+{
+	FHitResult hit;
+	GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, hit);
+
+	AActor* selectedActor = hit.GetActor();
+
+	if (selectedActor)
+	{
+
+		if (selectedPawn)
+		{
+			selectedPawn->SelectActor(false);
+		}
+
+		selectedPawn = Cast<ABasePawn>(selectedActor);
+		if (selectedPawn)
+		{
+			selectedPawn->SelectActor(true);
+		}
+	}
 }

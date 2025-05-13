@@ -14,11 +14,17 @@ ABasePawn::ABasePawn()
 
 	capsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
 	RootComponent = Cast<USceneComponent>(capsuleComponent);
+	capsuleComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
 
 	skeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
 	skeletalMesh->SetupAttachment(RootComponent);
 
 	floatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingMovement"));
+
+	selectedIndicator = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SelectedIndicator"));
+	selectedIndicator->SetupAttachment(RootComponent);
+	selectedIndicator->SetHiddenInGame(true);
+	selectedIndicator->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 // Called when the game starts or when spawned
@@ -40,5 +46,10 @@ void ABasePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ABasePawn::SelectActor(const bool select)
+{
+	selectedIndicator->SetHiddenInGame(!select);
 }
 

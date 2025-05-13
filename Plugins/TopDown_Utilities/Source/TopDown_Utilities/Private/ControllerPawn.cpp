@@ -82,4 +82,3 @@ void AControllerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	}
 
 }
-

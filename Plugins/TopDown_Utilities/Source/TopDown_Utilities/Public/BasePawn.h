@@ -25,6 +25,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pawn, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UFloatingPawnMovement> floatingPawnMovement;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pawn, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UStaticMeshComponent> selectedIndicator;
+
 public:
 	// Sets default values for this pawn's properties
 	ABasePawn();
@@ -39,5 +42,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION()
+	void SelectActor(const bool select);
 
 };
