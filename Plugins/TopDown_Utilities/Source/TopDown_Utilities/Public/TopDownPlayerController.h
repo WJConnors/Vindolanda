@@ -27,7 +27,7 @@ private:
 	TObjectPtr<UInputAction> selectAction;
 
 	UPROPERTY()
-	ABasePawn* selectedPawn;
+	AActor* selectedActor;
 
 protected:
 	virtual void SetupInputComponent() override;

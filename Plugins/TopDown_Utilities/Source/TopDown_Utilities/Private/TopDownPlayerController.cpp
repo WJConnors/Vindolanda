@@ -34,20 +34,22 @@ void ATopDownPlayerController::SelectAction(const FInputActionValue& value)
 	FHitResult hit;
 	GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, hit);
 
-	AActor* selectedActor = hit.GetActor();
+	if (selectedActor)
+	{
+		if (selectedActor->GetClass()->ImplementsInterface(USelectableInterface::StaticClass()))
+		{
+			ISelectableInterface::Execute_SelectActor(selectedActor, false);
+		}
+	}
+
+	selectedActor = hit.GetActor();
 
 	if (selectedActor)
 	{
 
-		if (selectedPawn)
+		if (selectedActor->GetClass()->ImplementsInterface(USelectableInterface::StaticClass()))
 		{
-			selectedPawn->SelectActor(false);
-		}
-
-		selectedPawn = Cast<ABasePawn>(selectedActor);
-		if (selectedPawn)
-		{
-			selectedPawn->SelectActor(true);
+			ISelectableInterface::Execute_SelectActor(selectedActor, true);
 		}
 	}
 }

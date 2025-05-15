@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "SelectableInterface.h"
+
 #include "BasePawn.generated.h"
 
 class UCapsuleComponent;
@@ -11,7 +13,7 @@ class USkeletalMeshComponent;
 class UFloatingPawnMovement;
 
 UCLASS()
-class TOPDOWN_UTILITIES_API ABasePawn : public APawn
+class TOPDOWN_UTILITIES_API ABasePawn : public APawn, public ISelectableInterface
 {
 	GENERATED_BODY()
 
@@ -44,6 +46,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION()
-	void SelectActor(const bool select);
+	void SelectActorLocal(const bool select);
+
+	void SelectActor_Implementation(const bool select) override;
 
 };

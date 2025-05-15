@@ -48,7 +48,12 @@ void ABasePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void ABasePawn::SelectActor(const bool select)
+void ABasePawn::SelectActorLocal(const bool select)
+{
+	selectedIndicator->SetHiddenInGame(!select);
+}
+
+void ABasePawn::SelectActor_Implementation(const bool select)
 {
 	selectedIndicator->SetHiddenInGame(!select);
 }
