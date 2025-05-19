@@ -26,6 +26,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> selectAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> commandAction;
+
 	UPROPERTY()
 	AActor* selectedActor;
 
@@ -33,5 +36,7 @@ protected:
 	virtual void SetupInputComponent() override;
 
 	void SelectAction(const FInputActionValue& value);
+
+	void CommandAction(const FInputActionValue& value);
 	
 };

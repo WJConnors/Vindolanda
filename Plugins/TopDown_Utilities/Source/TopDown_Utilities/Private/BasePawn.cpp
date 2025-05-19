@@ -58,3 +58,9 @@ void ABasePawn::SelectActor_Implementation(const bool select)
 	selectedIndicator->SetHiddenInGame(!select);
 }
 
+void ABasePawn::MoveToLocation_Implementation(const FVector targetLocation)
+{
+	moveTargetLocation = targetLocation + FVector(0, 0, GetDefaultHalfHeight());
+	SetActorLocation(moveTargetLocation);
+}
+

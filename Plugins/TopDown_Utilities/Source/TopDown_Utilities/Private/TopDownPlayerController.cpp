@@ -25,6 +25,7 @@ void ATopDownPlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* enhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		enhancedInputComponent->BindAction(selectAction, ETriggerEvent::Completed, this, &ATopDownPlayerController::SelectAction);
+		enhancedInputComponent->BindAction(commandAction, ETriggerEvent::Completed, this, &ATopDownPlayerController::CommandAction);
 	}
 
 }
@@ -50,6 +51,23 @@ void ATopDownPlayerController::SelectAction(const FInputActionValue& value)
 		if (selectedActor->GetClass()->ImplementsInterface(USelectableInterface::StaticClass()))
 		{
 			ISelectableInterface::Execute_SelectActor(selectedActor, true);
+		}
+	}
+}
+
+void ATopDownPlayerController::CommandAction(const FInputActionValue& value)
+{
+	if (selectedActor)
+	{
+		if (selectedActor->GetClass()->ImplementsInterface(UNavigableInterface::StaticClass()))
+		{
+			FHitResult hitResult;
+			GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, hitResult);
+			if (hitResult.bBlockingHit)
+			{
+				INavigableInterface::Execute_MoveToLocation(selectedActor, hitResult.Location);
+			}
+
 		}
 	}
 }
