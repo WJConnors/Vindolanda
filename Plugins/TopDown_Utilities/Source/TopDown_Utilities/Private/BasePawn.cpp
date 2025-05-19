@@ -5,6 +5,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ABasePawn::ABasePawn()
@@ -39,6 +40,32 @@ void ABasePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	Move();
+
+}
+
+void ABasePawn::Move()
+{
+	if (!bMoving)
+	{
+		return;
+	}
+
+	FVector moveDirection{ moveTargetLocation - GetActorLocation() };
+	if (moveDirection.Length() < stopDistance)
+	{
+		bMoving = false;
+		return;
+	}
+
+	moveDirection.Normalize(1);
+	AddMovementInput(moveDirection, 1.f);
+
+	FRotator finalRotation{ 0.0f, UKismetMathLibrary::MakeRotFromX(moveDirection).Yaw, 0.0f };
+
+	FRotator newRotation = FMath::RInterpTo(GetActorRotation(), finalRotation, GetWorld()->GetDeltaSeconds(), rotateSpeed);
+
+	SetActorRotation(newRotation);
 }
 
 // Called to bind functionality to input
@@ -61,6 +88,6 @@ void ABasePawn::SelectActor_Implementation(const bool select)
 void ABasePawn::MoveToLocation_Implementation(const FVector targetLocation)
 {
 	moveTargetLocation = targetLocation + FVector(0, 0, GetDefaultHalfHeight());
-	SetActorLocation(moveTargetLocation);
+	bMoving = true;
 }
 
