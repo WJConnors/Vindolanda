@@ -6,6 +6,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "AIController.h"
 
 // Sets default values
 ABasePawn::ABasePawn()
@@ -40,11 +41,11 @@ void ABasePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Move();
+	OrientToMovement();
 
 }
 
-void ABasePawn::Move()
+void ABasePawn::OrientToMovement()
 {
 	if (!bMoving)
 	{
@@ -59,7 +60,7 @@ void ABasePawn::Move()
 	}
 
 	moveDirection.Normalize(1);
-	AddMovementInput(moveDirection, 1.f);
+	//AddMovementInput(moveDirection, 1.f);
 
 	FRotator finalRotation{ 0.0f, UKismetMathLibrary::MakeRotFromX(moveDirection).Yaw, 0.0f };
 
@@ -89,5 +90,8 @@ void ABasePawn::MoveToLocation_Implementation(const FVector targetLocation)
 {
 	moveTargetLocation = targetLocation + FVector(0, 0, GetDefaultHalfHeight());
 	bMoving = true;
+
+	AAIController* pawnAIController = Cast<AAIController>(GetController());
+	pawnAIController->MoveToLocation(targetLocation, stopDistance);
 }
 
