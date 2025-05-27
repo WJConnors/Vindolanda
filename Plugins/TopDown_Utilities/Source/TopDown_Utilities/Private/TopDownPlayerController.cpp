@@ -6,10 +6,19 @@
 #include "InputMappingContext.h"
 #include "EnhancedInputComponent.h"
 #include "BasePawn.h"
+#include "TopDownHUD.h"
+
 
 ATopDownPlayerController::ATopDownPlayerController()
 {
 	bShowMouseCursor = true;
+}
+
+void ATopDownPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	topDownHUD = Cast<ATopDownHUD>(GetHUD());
 }
 
 void ATopDownPlayerController::SetupInputComponent()
@@ -25,6 +34,11 @@ void ATopDownPlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* enhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		enhancedInputComponent->BindAction(selectAction, ETriggerEvent::Completed, this, &ATopDownPlayerController::SelectAction);
+
+		enhancedInputComponent->BindAction(selectAction, ETriggerEvent::Started, this, &ATopDownPlayerController::SelectStart);
+		enhancedInputComponent->BindAction(selectAction, ETriggerEvent::Triggered, this, &ATopDownPlayerController::SelectOngoing);
+		enhancedInputComponent->BindAction(selectAction, ETriggerEvent::Completed, this, &ATopDownPlayerController::SelectEnd);
+
 		enhancedInputComponent->BindAction(commandAction, ETriggerEvent::Completed, this, &ATopDownPlayerController::CommandAction);
 	}
 
@@ -69,5 +83,31 @@ void ATopDownPlayerController::CommandAction(const FInputActionValue& value)
 			}
 
 		}
+	}
+}
+
+void ATopDownPlayerController::SelectStart(const FInputActionValue& value)
+{
+	float mouseX, mouseY;
+	GetMousePosition(mouseX, mouseY);
+	selectStartPos = FVector2D(mouseX, mouseY);
+}
+
+void ATopDownPlayerController::SelectOngoing(const FInputActionValue& value)
+{
+	float mouseX, mouseY;
+	GetMousePosition(mouseX, mouseY);
+	selectSize = FVector2D(mouseX - selectStartPos.X, mouseY - selectStartPos.Y);
+	if (topDownHUD)
+	{
+		topDownHUD->ShowSelect(selectStartPos, selectSize);
+	}
+}
+
+void ATopDownPlayerController::SelectEnd(const FInputActionValue& value)
+{
+	if (topDownHUD)
+	{
+		topDownHUD->HideSelect();
 	}
 }

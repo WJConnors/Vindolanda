@@ -9,6 +9,7 @@
 class UInputMappingContext;
 class UInputAction;
 class ABasePawn;
+class ATopDownHUD;
 struct FInputActionValue;
 
 UCLASS()
@@ -30,13 +31,26 @@ private:
 	TObjectPtr<UInputAction> commandAction;
 
 	UPROPERTY()
-	AActor* selectedActor;
+	TObjectPtr<AActor> selectedActor;
+
+	UPROPERTY()
+	TObjectPtr<ATopDownHUD> topDownHUD;
+
+	FVector2D selectStartPos;
+	FVector2D selectSize;
 
 protected:
+
+	virtual void BeginPlay() override;
+
 	virtual void SetupInputComponent() override;
 
 	void SelectAction(const FInputActionValue& value);
 
 	void CommandAction(const FInputActionValue& value);
+
+	void SelectStart(const FInputActionValue& value);
+	void SelectOngoing(const FInputActionValue& value);
+	void SelectEnd(const FInputActionValue& value);
 	
 };
