@@ -71,17 +71,31 @@ void ATopDownPlayerController::SelectAction(const FInputActionValue& value)
 
 void ATopDownPlayerController::CommandAction(const FInputActionValue& value)
 {
-	if (selectedActor)
+	FHitResult hitResult;
+	GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, hitResult);
+	if (!hitResult.bBlockingHit) return;
+
+	if (selectedActors.Num() > 0)
+	{
+		int i{ selectedActors.Num() / 2 };
+		for (AActor* actor : allSelectedActors)
+		{
+			if (actor)
+			{
+				if (actor->GetClass()->ImplementsInterface(UNavigableInterface::StaticClass()))
+				{
+					INavigableInterface::Execute_MoveToLocation(actor, hitResult.Location + FVector(0, 100*i, 0));
+					i++;
+				}
+			}
+		}
+	}
+
+	else if(selectedActor)
 	{
 		if (selectedActor->GetClass()->ImplementsInterface(UNavigableInterface::StaticClass()))
 		{
-			FHitResult hitResult;
-			GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, hitResult);
-			if (hitResult.bBlockingHit)
-			{
-				INavigableInterface::Execute_MoveToLocation(selectedActor, hitResult.Location);
-			}
-
+			INavigableInterface::Execute_MoveToLocation(selectedActor, hitResult.Location);
 		}
 	}
 }
@@ -109,5 +123,39 @@ void ATopDownPlayerController::SelectEnd(const FInputActionValue& value)
 	if (topDownHUD)
 	{
 		topDownHUD->HideSelect();
+		FTimerHandle timerHandleSelectMultipleActors;
+		GetWorld()->GetTimerManager().SetTimer(timerHandleSelectMultipleActors, this, &ATopDownPlayerController::SelectMultipleActors, .05f, false);
+	}
+}
+
+void ATopDownPlayerController::SelectMultipleActors()
+{
+	if (topDownHUD)
+	{
+		for (AActor* actor : allSelectedActors)
+		{
+			if (actor)
+			{
+				if (actor->GetClass()->ImplementsInterface(USelectableInterface::StaticClass()))
+				{
+					ISelectableInterface::Execute_SelectActor(actor, false);
+				}
+			}
+		}
+
+		selectedActors.Empty();
+		allSelectedActors = topDownHUD->GetselectedActors();
+
+		for (AActor* actor : allSelectedActors)
+		{
+			if (actor)
+			{
+				if (actor->GetClass()->ImplementsInterface(USelectableInterface::StaticClass()))
+				{
+					ISelectableInterface::Execute_SelectActor(actor, true);
+					selectedActors.AddUnique(actor);
+				}
+			}
+		}
 	}
 }

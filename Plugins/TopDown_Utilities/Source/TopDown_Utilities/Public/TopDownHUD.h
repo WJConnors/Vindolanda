@@ -16,9 +16,14 @@ class TOPDOWN_UTILITIES_API ATopDownHUD : public AHUD
 
 private:
 	bool bDrawSelectionRect{ false };
+	bool bSelectActors{ false };
 	FVector2D selectStart;
 	FVector2D selectSize;
 	FLinearColor selectColor{ FLinearColor(0.f, 0.f, 1.f, .2f) };
+
+	TArray<AActor*> selectedActors;
+
+	void SelectActorsInRect();
 
 protected:
 	virtual void DrawHUD() override;
@@ -26,4 +31,6 @@ protected:
 public:
 	void ShowSelect(const FVector2D inSelectStart, const FVector2D inSelectSize);
 	void HideSelect();
+
+	TArray<AActor*> GetselectedActors();
 };

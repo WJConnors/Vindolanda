@@ -38,6 +38,8 @@ private:
 
 	FVector2D selectStartPos;
 	FVector2D selectSize;
+	TArray<AActor*> allSelectedActors;
+	TArray<AActor*> selectedActors;
 
 protected:
 
@@ -52,5 +54,6 @@ protected:
 	void SelectStart(const FInputActionValue& value);
 	void SelectOngoing(const FInputActionValue& value);
 	void SelectEnd(const FInputActionValue& value);
+	void SelectMultipleActors();
 	
 };

@@ -11,6 +11,10 @@ void ATopDownHUD::DrawHUD()
 	{
 		DrawRect(selectColor, selectStart.X, selectStart.Y, selectSize.X, selectSize.Y);
 	}
+	if (bSelectActors)
+	{
+		SelectActorsInRect();
+	}
 }
 
 void ATopDownHUD::ShowSelect(const FVector2D inSelectStart, const FVector2D inSelectSize)
@@ -23,4 +27,20 @@ void ATopDownHUD::ShowSelect(const FVector2D inSelectStart, const FVector2D inSe
 void ATopDownHUD::HideSelect()
 {
 	bDrawSelectionRect = false;
+	bSelectActors = true;
+}
+
+TArray<AActor*> ATopDownHUD::GetselectedActors()
+{
+	return selectedActors;
+}
+
+void ATopDownHUD::SelectActorsInRect()
+{
+	selectedActors.Empty();
+	FVector2D firstPoint = selectStart;
+	FVector2D secondPoint = selectStart + selectSize;
+	GetActorsInSelectionRectangle<AActor>(firstPoint, secondPoint, selectedActors, false);
+
+	bSelectActors = false;
 }
