@@ -57,6 +57,7 @@ protected:
 
 	void Move(const FInputActionValue& value);
 	void Zoom(const FInputActionValue& value);
+	void EdgeScroll();
 
 public:	
 	// Called every frame

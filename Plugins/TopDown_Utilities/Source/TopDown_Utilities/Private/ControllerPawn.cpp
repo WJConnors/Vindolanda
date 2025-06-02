@@ -63,10 +63,56 @@ void AControllerPawn::Zoom(const FInputActionValue& value)
 	}
 }
 
+void AControllerPawn::EdgeScroll()
+{
+	APlayerController* pController = Cast<APlayerController>(Controller);
+	if (!pController)
+	{
+		return;
+	}
+
+	float mouseX{ 0 }, mouseY{ 0 };
+
+	if (pController->GetMousePosition(mouseX, mouseY))
+	{
+		FVector2D viewportSize;
+		if (GEngine && GEngine->GameViewport)
+		{
+			GEngine->GameViewport->GetViewportSize(viewportSize);
+
+			float threshold = 10.f;
+			FVector2D movementInput{ FVector2D::ZeroVector };
+			if (mouseX < threshold)
+			{
+				movementInput.X = -1.f;
+			}
+			if (mouseX > viewportSize.X - threshold)
+			{
+				movementInput.X = 1.f;
+			}
+			if (mouseY < threshold)
+			{
+				movementInput.Y = 1.f;
+			}
+			if (mouseY > viewportSize.Y - threshold)
+			{
+				movementInput.Y = -1.f;
+			}
+
+			if (!movementInput.IsZero())
+			{
+				Move(FInputActionValue(movementInput));
+			}
+		}
+	}
+}
+
 // Called every frame
 void AControllerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	EdgeScroll();
 
 }
 
