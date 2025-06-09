@@ -157,5 +157,6 @@ void ATopDownPlayerController::SelectMultipleActors()
 				}
 			}
 		}
+		OnActorsSelected.Broadcast(selectedActors);
 	}
 }

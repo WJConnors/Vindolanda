@@ -12,6 +12,8 @@ class ABasePawn;
 class ATopDownHUD;
 struct FInputActionValue;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActorsSelectedDelegate, const TArray<AActor*>&, selectedActors);
+
 UCLASS()
 class TOPDOWN_UTILITIES_API ATopDownPlayerController : public APlayerController
 {
@@ -26,6 +28,9 @@ public:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> selectAction;
+
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
+	FOnActorsSelectedDelegate OnActorsSelected;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> commandAction;
