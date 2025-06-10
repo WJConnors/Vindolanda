@@ -95,3 +95,8 @@ void ABasePawn::MoveToLocation_Implementation(const FVector targetLocation)
 	pawnAIController->MoveToLocation(targetLocation, stopDistance);
 }
 
+EPawnType ABasePawn::GetPawnType_Implementation()
+{
+	return pawnType;
+}
+

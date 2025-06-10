@@ -6,6 +6,8 @@
 #include "GameFramework/Pawn.h"
 #include "SelectableInterface.h"
 #include "NavigableInterface.h"
+#include "CommonENUMS.h"
+#include "BasePawnInterface.h"
 
 #include "BasePawn.generated.h"
 
@@ -14,7 +16,7 @@ class USkeletalMeshComponent;
 class UFloatingPawnMovement;
 
 UCLASS()
-class TOPDOWN_UTILITIES_API ABasePawn : public APawn, public ISelectableInterface, public INavigableInterface
+class TOPDOWN_UTILITIES_API ABasePawn : public APawn, public ISelectableInterface, public INavigableInterface, public IBasePawnInterface
 {
 	GENERATED_BODY()
 
@@ -30,6 +32,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pawn, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> selectedIndicator;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, meta = (AllowPrivateAccess = "true"))
+	EPawnType pawnType{ EPawnType::Villager };
 
 public:
 	// Sets default values for this pawn's properties
@@ -61,5 +66,7 @@ public:
 	void SelectActor_Implementation(const bool select) override;
 
 	void MoveToLocation_Implementation(const FVector targetLocation) override;
+
+	EPawnType GetPawnType_Implementation() override;
 
 };

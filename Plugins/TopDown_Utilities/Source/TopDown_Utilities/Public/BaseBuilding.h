@@ -9,6 +9,8 @@
 #include "BaseBuilding.generated.h"
 
 class UBoxComponent;
+class UInputAction;
+struct FInputActionValue;
 
 UCLASS()
 class TOPDOWN_UTILITIES_API ABaseBuilding : public AActor, public ISelectableInterface
@@ -26,6 +28,12 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pawn, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> selectedIndicator;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Building, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> placeAction;
+
+	UPROPERTY()
+	FTimerHandle placementTimerHandle;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -35,5 +43,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SelectActor_Implementation(const bool select) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Building")
+	void EnablePlacing();
+
+	void CheckPlacementValidity();
+
+	void PlaceBuilding(const FInputActionValue& value);
+
+	void CancelBuildingPlacement(const FInputActionValue& value);
 
 };
