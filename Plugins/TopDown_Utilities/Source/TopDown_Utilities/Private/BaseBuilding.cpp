@@ -12,6 +12,14 @@ ABaseBuilding::ABaseBuilding()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	if (GetClass() == ABaseBuilding::StaticClass())
+	{
+		CreateBuilding();
+	}
+}
+
+void ABaseBuilding::CreateBuilding()
+{
 	staticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	RootComponent = staticMesh;
 
@@ -20,7 +28,6 @@ ABaseBuilding::ABaseBuilding()
 	selectedIndicator->SetHiddenInGame(true);
 	selectedIndicator->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	selectedIndicator->SetRelativeLocation(FVector(0.f, 0.f, -100.f));
-
 }
 
 // Called when the game starts or when spawned

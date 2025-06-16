@@ -43,6 +43,8 @@ private:
 	UPROPERTY()
 	FVector buildingExtents{ FVector(500.5, 500.f, 500.f) };
 
+	virtual void CreateBuilding();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -64,5 +66,6 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Building")
 	void ToggleValidity(bool valid);
+
 
 };
