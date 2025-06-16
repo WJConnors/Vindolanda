@@ -19,6 +19,7 @@ ABaseBuilding::ABaseBuilding()
 	selectedIndicator->SetupAttachment(RootComponent);
 	selectedIndicator->SetHiddenInGame(true);
 	selectedIndicator->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	selectedIndicator->SetRelativeLocation(FVector(0.f, 0.f, -100.f));
 
 }
 
@@ -60,16 +61,56 @@ void ABaseBuilding::EnablePlacing()
 
 void ABaseBuilding::CheckPlacementValidity()
 {
+
+	ToggleValidity(bCanPlace);
+
+	bCanPlace = false;
 	FHitResult hit;
 	GetWorld()->GetFirstPlayerController()->GetHitResultUnderCursor(ECC_Visibility, false, hit);
-	if (hit.bBlockingHit)
+	if (!hit.bBlockingHit)
 	{
-		SetActorLocation(hit.Location);
+		return;
 	}
+
+	FVector modifiedLocation{ hit.Location + FVector(0.f, 0.f, 100.f) };
+	SetActorLocation(modifiedLocation);
+
+	if (!hit.GetActor()->ActorHasTag(requiredTag))
+	{
+		return;
+	}
+
+	FVector boxHalfExtent = buildingExtents / 2;
+	FVector traceStart = modifiedLocation + FVector(0.f, 0.f, boxHalfExtent.Z);
+	FVector traceEnd = traceStart + FVector::UpVector;
+
+	FCollisionQueryParams collisionParams;
+	collisionParams.AddIgnoredActor(this);
+	collisionParams.bTraceComplex = false;
+	TArray<FHitResult> outHits;
+
+	bool boxHit = GetWorld()->SweepMultiByChannel(outHits, traceStart, traceEnd, GetActorRotation().Quaternion(), ECC_Visibility, FCollisionShape::MakeBox(boxHalfExtent), collisionParams);
+
+	for (const FHitResult& bHit : outHits)
+	{
+		if (!(bHit.GetActor() != nullptr && bHit.GetActor()->ActorHasTag(requiredTag)))
+		{
+			break;
+		}
+	}
+
+	bCanPlace = true;
+	
 }
 
 void ABaseBuilding::PlaceBuilding(const FInputActionValue& value)
 {
+	if (!bCanPlace)
+	{
+		SetLifeSpan(0.1f);
+		return;
+	}
+
 	GetWorld()->GetTimerManager().ClearTimer(placementTimerHandle);
 	this->SetActorEnableCollision(true);
 }

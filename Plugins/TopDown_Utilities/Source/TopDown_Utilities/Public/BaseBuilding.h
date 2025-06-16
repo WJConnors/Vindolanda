@@ -34,6 +34,15 @@ private:
 	UPROPERTY()
 	FTimerHandle placementTimerHandle;
 
+	UPROPERTY()
+	FName requiredTag{ "CanPlaceBuildings" };
+
+	UPROPERTY()
+	bool bCanPlace{ false };
+
+	UPROPERTY()
+	FVector buildingExtents{ FVector(500.5, 500.f, 500.f) };
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -52,5 +61,8 @@ public:
 	void PlaceBuilding(const FInputActionValue& value);
 
 	void CancelBuildingPlacement(const FInputActionValue& value);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Building")
+	void ToggleValidity(bool valid);
 
 };
