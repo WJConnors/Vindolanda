@@ -18,10 +18,10 @@ public:
 	ABasicBrick();
 
 protected:
-	void CreateBasicBrick();
+	virtual void CreateBuilding() override;
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> basicBrickMesh;
 	
 };

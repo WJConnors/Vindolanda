@@ -6,10 +6,10 @@
 
 ABasicBrick::ABasicBrick()
 {
-	CreateBasicBrick();
+	CreateBuilding();
 }
 
-void ABasicBrick::CreateBasicBrick()
+void ABasicBrick::CreateBuilding()
 {
 	basicBrickMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BasicBrickMesh"));
 	RootComponent = basicBrickMesh;
