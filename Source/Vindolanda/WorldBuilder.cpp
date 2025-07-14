@@ -111,3 +111,15 @@ void AWorldBuilder::ClearBricks()
     BrickMap.Empty();
     InstanceMap.Empty();
 }
+
+// In WorldBuilder.cpp
+bool AWorldBuilder::GetGridPositionFromLocation(const FVector& WorldLocation, FIntVector& OutGridPos) const
+{
+    // Convert into local space if your actor isn’t at the origin:
+    FVector Local = WorldLocation - GetActorLocation();
+
+    OutGridPos.X = FMath::RoundToInt(Local.X / CellSize);
+    OutGridPos.Y = FMath::RoundToInt(Local.Y / CellSize);
+    OutGridPos.Z = FMath::RoundToInt(Local.Z / CellSize);
+    return true;
+}

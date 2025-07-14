@@ -25,6 +25,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Bricks")
     void ClearBricks();
 
+    UFUNCTION(BlueprintCallable, Category = "Bricks")
+    bool GetGridPositionFromLocation(const FVector& WorldLocation, FIntVector& OutGridPos) const;
+
 protected:
     virtual void OnConstruction(const FTransform& Transform) override;
     virtual void BeginPlay() override;
