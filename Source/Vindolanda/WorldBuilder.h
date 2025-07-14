@@ -1,6 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -10,30 +8,47 @@
 UCLASS()
 class VINDOLANDA_API AWorldBuilder : public AActor
 {
-	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	AWorldBuilder();
+    GENERATED_BODY()
 
-	virtual void OnConstruction(const FTransform& Transform) override;
+public:
+    AWorldBuilder();
 
-public:	
-	// The mesh asset to instance (set this to your brick mesh in the BP subclass)
-	UPROPERTY(EditAnywhere, Category = "Bricks")
-	UStaticMesh* BrickMesh;
+    /** Adds a brick at GridPos if none exists. Returns true if added. */
+    UFUNCTION(BlueprintCallable, Category = "Bricks")
+    bool AddBrickAt(const FIntVector& GridPos);
 
-	// Instanced mesh component that will batch‐draw all bricks
-	UPROPERTY(VisibleAnywhere, Category = "Bricks")
-	UHierarchicalInstancedStaticMeshComponent* InstancedBricks;
+    /** Removes the brick at GridPos if exists. Returns true if removed. */
+    UFUNCTION(BlueprintCallable, Category = "Bricks")
+    bool RemoveBrickAt(const FIntVector& GridPos);
 
-	// Grid cell size (in world units, e.g. 100 cm)
-	UPROPERTY(EditAnywhere, Category = "Bricks")
-	float CellSize = 100.f;
+    /** Clears all bricks */
+    UFUNCTION(BlueprintCallable, Category = "Bricks")
+    void ClearBricks();
 
-	// Half‐extent (so a value of 25 gives you –25..+25)
-	UPROPERTY(EditAnywhere, Category = "Bricks")
-	int32 HalfExtent = 25;
-	
+protected:
+    virtual void OnConstruction(const FTransform& Transform) override;
+    virtual void BeginPlay() override;
 
+    // Instanced mesh for bricks
+    UPROPERTY(VisibleAnywhere, Category = "Bricks")
+    UHierarchicalInstancedStaticMeshComponent* InstancedBricks;
+
+    // Mesh asset to instance
+    UPROPERTY(EditAnywhere, Category = "Bricks")
+    UStaticMesh* BrickMesh;
+
+    // Grid cell size
+    UPROPERTY(EditAnywhere, Category = "Bricks")
+    float CellSize = 100.f;
+
+    // Half extent
+    UPROPERTY(EditAnywhere, Category = "Bricks")
+    int32 HalfExtent = 25;
+
+private:
+    // Mapping from grid pos to instance index
+    TMap<FIntVector, int32> BrickMap;
+
+    // Mapping from instance index to grid pos, for removal fixup
+    TMap<int32, FIntVector> InstanceMap;
 };
