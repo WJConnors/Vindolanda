@@ -25,8 +25,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Bricks")
     void ClearBricks();
 
+    /**
+     * Given a HitResult from a cursor-trace, returns the grid coordinate adjacent to the hit face.
+     * Returns true if successful, false otherwise.
+     */
     UFUNCTION(BlueprintCallable, Category = "Bricks")
-    bool GetGridPositionFromLocation(const FVector& WorldLocation, FIntVector& OutGridPos) const;
+    bool GetAdjacentGridPositionFromHit(const FHitResult& HitResult, FIntVector& OutAdjacentGridPos) const;
 
 protected:
     virtual void OnConstruction(const FTransform& Transform) override;

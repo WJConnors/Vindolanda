@@ -112,14 +112,28 @@ void AWorldBuilder::ClearBricks()
     InstanceMap.Empty();
 }
 
-// In WorldBuilder.cpp
-bool AWorldBuilder::GetGridPositionFromLocation(const FVector& WorldLocation, FIntVector& OutGridPos) const
+bool AWorldBuilder::GetAdjacentGridPositionFromHit(const FHitResult& HitResult, FIntVector& OutAdjacentGridPos) const
 {
-    // Convert into local space if your actor isn’t at the origin:
-    FVector Local = WorldLocation - GetActorLocation();
+    if (!HitResult.bBlockingHit)
+    {
+        return false;
+    }
 
-    OutGridPos.X = FMath::RoundToInt(Local.X / CellSize);
-    OutGridPos.Y = FMath::RoundToInt(Local.Y / CellSize);
-    OutGridPos.Z = FMath::RoundToInt(Local.Z / CellSize);
+    // Convert world location to local grid position
+    FVector Local = HitResult.Location - GetActorLocation();
+    FIntVector BaseGridPos(
+        FMath::RoundToInt(Local.X / CellSize),
+        FMath::RoundToInt(Local.Y / CellSize),
+        FMath::RoundToInt(Local.Z / CellSize)
+    );
+
+    // Determine face offset from impact normal
+    FVector Normal = HitResult.ImpactNormal;
+    int32 OffX = (Normal.X > 0.5f) ? 1 : (Normal.X < -0.5f ? -1 : 0);
+    int32 OffY = (Normal.Y > 0.5f) ? 1 : (Normal.Y < -0.5f ? -1 : 0);
+    int32 OffZ = (Normal.Z > 0.5f) ? 1 : (Normal.Z < -0.5f ? -1 : 0);
+    FIntVector Offset(OffX, OffY, OffZ);
+
+    OutAdjacentGridPos = BaseGridPos + Offset;
     return true;
 }
