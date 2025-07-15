@@ -25,6 +25,10 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Bricks")
     void ClearBricks();
 
+    /** Converts a world location to the nearest grid coordinate */
+    UFUNCTION(BlueprintCallable, Category = "Bricks")
+    bool GetGridPositionFromLocation(const FVector& WorldLocation, FIntVector& OutGridPos) const;
+
     /**
      * Given a HitResult from a cursor-trace, returns the grid coordinate adjacent to the hit face.
      * Returns true if successful, false otherwise.
