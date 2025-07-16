@@ -15,11 +15,6 @@ void AWorldBuilder::OnConstruction(const FTransform& Transform)
 {
     Super::OnConstruction(Transform);
 
-    // Clear existing instances and maps
-    InstancedBricks->ClearInstances();
-    BrickMap.Empty();
-    InstanceMap.Empty();
-
     if (BrickMesh)
     {
         InstancedBricks->SetStaticMesh(BrickMesh);
@@ -29,19 +24,21 @@ void AWorldBuilder::OnConstruction(const FTransform& Transform)
         return;
     }
 
+    // Clear existing instances and maps
+    InstancedBricks->ClearInstances();
+    BrickMap.Empty();
+    InstanceMap.Empty();
+
     // Populate initial floor
-    for (int32 X = -HalfExtent; X <= HalfExtent; ++X)
-    {
-        for (int32 Y = -HalfExtent; Y <= HalfExtent; ++Y)
-        {
-            AddBrickAt(FIntVector(X, Y, 0));
-        }
-    }
+    PopulateFloor(halfExtentBP);
 }
 
 void AWorldBuilder::BeginPlay()
 {
     Super::BeginPlay();
+
+    ClearBricks();
+    PopulateFloor(halfExtentRT);
 
     // Rebuild mapping for instances created in OnConstruction / loaded from the level
     BrickMap.Empty();
@@ -59,6 +56,17 @@ void AWorldBuilder::BeginPlay()
         );
         BrickMap.Add(GridPos, Index);
         InstanceMap.Add(Index, GridPos);
+    }
+}
+
+void AWorldBuilder::PopulateFloor(int32 halfExtent)
+{
+    for (int32 X = -halfExtent; X <= halfExtent; ++X)
+    {
+        for (int32 Y = -halfExtent; Y <= halfExtent; ++Y)
+        {
+            AddBrickAt(FIntVector(X, Y, 0));
+        }
     }
 }
 
