@@ -57,7 +57,10 @@ protected:
     int32 halfExtentBP = 25;
 
     UPROPERTY(EditAnywhere, Category = "Bricks")
-    int32 halfExtentRT = 100;
+    int32 halfExtentRTMax = 40;
+
+    UPROPERTY(EditAnywhere, Category = "Bricks")
+    int32 halfExtentRTMin = 25;
 
 private:
     // Mapping from grid pos to instance index
@@ -66,5 +69,6 @@ private:
     // Mapping from instance index to grid pos, for removal fixup
     TMap<int32, FIntVector> InstanceMap;
 
-    void PopulateFloor(int32 halfExtent);
+    void PopulateFloor(int32 halfExtentMax, int32 halfExtentMin);
+    void PopulateDefaultWalls(int32 halfExtentMax, int32 halfExtentMin);
 };

@@ -30,7 +30,8 @@ void AWorldBuilder::OnConstruction(const FTransform& Transform)
     InstanceMap.Empty();
 
     // Populate initial floor
-    PopulateFloor(halfExtentBP);
+    PopulateDefaultWalls(halfExtentRTMax, halfExtentRTMin);
+    //PopulateFloor(halfExtentRTMax, halfExtentRTMin);
 }
 
 void AWorldBuilder::BeginPlay()
@@ -38,7 +39,8 @@ void AWorldBuilder::BeginPlay()
     Super::BeginPlay();
 
     ClearBricks();
-    PopulateFloor(halfExtentRT);
+    PopulateDefaultWalls(halfExtentRTMax, halfExtentRTMin);
+    //PopulateFloor(halfExtentRTMax, halfExtentRTMin);
 
     // Rebuild mapping for instances created in OnConstruction / loaded from the level
     BrickMap.Empty();
@@ -59,15 +61,48 @@ void AWorldBuilder::BeginPlay()
     }
 }
 
-void AWorldBuilder::PopulateFloor(int32 halfExtent)
+void AWorldBuilder::PopulateFloor(int32 halfExtentMax, int32 halfExtentMin)
 {
-    for (int32 X = -halfExtent; X <= halfExtent; ++X)
+    for (int32 x = -halfExtentMax; x <= halfExtentMax; ++x)
     {
-        for (int32 Y = -halfExtent; Y <= halfExtent; ++Y)
+        for (int32 y = -halfExtentMax; y <= halfExtentMax; ++y)
         {
-            AddBrickAt(FIntVector(X, Y, 0));
+            if ((x < halfExtentMin && x > -halfExtentMin) && (y < halfExtentMin && y > -halfExtentMin)) continue;
+            AddBrickAt(FIntVector(x, y, 0));
         }
     }
+}
+
+void AWorldBuilder::PopulateDefaultWalls(int32 halfExtentMax, int32 halfExtentMin)
+{
+    for (int32 i = 0; i < 5; i++)
+    {
+        // Top and bottom edges
+        for (int32 X = -halfExtentMax; X <= halfExtentMax; ++X)
+        {
+            AddBrickAt(FIntVector(X, halfExtentMax, i));
+            AddBrickAt(FIntVector(X, -halfExtentMax, i));
+        }
+        // Left and right edges (excluding corners)
+        for (int32 Y = -halfExtentMax + 1; Y < halfExtentMax; ++Y)
+        {
+            AddBrickAt(FIntVector(halfExtentMax, Y, i));
+            AddBrickAt(FIntVector(-halfExtentMax, Y, i));
+        }
+        // Top and bottom edges
+        for (int32 X = -halfExtentMin; X <= halfExtentMin; ++X)
+        {
+            AddBrickAt(FIntVector(X, halfExtentMin, i));
+            AddBrickAt(FIntVector(X, -halfExtentMin, i));
+        }
+        // Left and right edges (excluding corners)
+        for (int32 Y = -halfExtentMin + 1; Y < halfExtentMin; ++Y)
+        {
+            AddBrickAt(FIntVector(halfExtentMin, Y, i));
+            AddBrickAt(FIntVector(-halfExtentMin, Y, i));
+        }
+    }
+
 }
 
 bool AWorldBuilder::AddBrickAt(const FIntVector& GridPos)
