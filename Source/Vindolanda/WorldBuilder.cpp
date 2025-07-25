@@ -160,13 +160,13 @@ void AWorldBuilder::ClearBricks()
     InstanceMap.Empty();
 }
 
-bool AWorldBuilder::GetGridPositionFromLocation(const FVector& WorldLocation, FIntVector& OutGridPos) const
+bool AWorldBuilder::GetGridPositionFromLocation(const FVector& WorldLocation, FIntVector& OutGridPos, bool isNewFloor) const
 {
     // Convert world location to local space
     FVector Local = WorldLocation - GetActorLocation();
     OutGridPos.X = FMath::RoundToInt(Local.X / CellSize);
     OutGridPos.Y = FMath::RoundToInt(Local.Y / CellSize);
-    OutGridPos.Z = FMath::RoundToInt(Local.Z / CellSize);
+    OutGridPos.Z = isNewFloor ? 0 : FMath::RoundToInt(Local.Z / CellSize);
     return true;
 }
 

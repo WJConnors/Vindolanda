@@ -27,7 +27,7 @@ public:
 
     /** Converts a world location to the nearest grid coordinate */
     UFUNCTION(BlueprintCallable, Category = "Bricks")
-    bool GetGridPositionFromLocation(const FVector& WorldLocation, FIntVector& OutGridPos) const;
+    bool GetGridPositionFromLocation(const FVector& WorldLocation, FIntVector& OutGridPos, bool isNewFloor = false) const;
 
     /**
      * Given a HitResult from a cursor-trace, returns the grid coordinate adjacent to the hit face.
