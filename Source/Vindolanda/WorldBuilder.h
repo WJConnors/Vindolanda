@@ -66,7 +66,7 @@ private:
     // Mapping from grid pos to instance index
     TMap<FIntVector, int32> BrickMap;
 
-    // Mapping from instance index to grid pos, for removal fixup
+    //Quick lookup of which grid‐coordinate lives at a given instance index. 
     TMap<int32, FIntVector> InstanceMap;
 
     void PopulateFloor(int32 halfExtentMax, int32 halfExtentMin);

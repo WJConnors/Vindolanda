@@ -59,6 +59,7 @@ void AWorldBuilder::BeginPlay()
         BrickMap.Add(GridPos, Index);
         InstanceMap.Add(Index, GridPos);
     }
+    GetWorld()->Exec(GetWorld(), TEXT("RebuildNavigation"));
 }
 
 void AWorldBuilder::PopulateFloor(int32 halfExtentMax, int32 halfExtentMin)
@@ -118,6 +119,7 @@ bool AWorldBuilder::AddBrickAt(const FIntVector& GridPos)
     int32 NewIndex = InstancedBricks->AddInstance(InstanceTransform);
     BrickMap.Add(GridPos, NewIndex);
     InstanceMap.Add(NewIndex, GridPos);
+    GetWorld()->Exec(GetWorld(), TEXT("RebuildNavigation"));
 
     return true;
 }
@@ -135,15 +137,18 @@ bool AWorldBuilder::RemoveBrickAt(const FIntVector& GridPos)
 
     if (RemoveIndex != LastIndex)
     {
-        // Fix up the moved instance's mapping
-        FIntVector MovedPos = InstanceMap[LastIndex];
-        BrickMap[MovedPos] = RemoveIndex;
-        InstanceMap.Add(RemoveIndex, MovedPos);
-        InstanceMap.Remove(LastIndex);
+        if (FIntVector* MovedGridPos = InstanceMap.Find(LastIndex))
+        {
+            // Update both maps to point that GridPos at the new index
+            BrickMap.Add(*MovedGridPos, RemoveIndex);
+            InstanceMap.Add(RemoveIndex, *MovedGridPos);
+        }
     }
+
     // Remove mapping for removed instance
     BrickMap.Remove(GridPos);
-    InstanceMap.Remove(RemoveIndex);
+    InstanceMap.Remove(LastIndex);
+    GetWorld()->Exec(GetWorld(), TEXT("RebuildNavigation"));
 
     return true;
 }
