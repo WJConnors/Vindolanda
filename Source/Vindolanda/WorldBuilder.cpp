@@ -81,37 +81,36 @@ void AWorldBuilder::PopulateDefaultWalls(int32 halfExtentMax, int32 halfExtentMi
         // Top and bottom edges
         for (int32 X = -halfExtentMax; X <= halfExtentMax; ++X)
         {
-            AddBrickAt(FIntVector(X, halfExtentMax, i));
-            AddBrickAt(FIntVector(X, -halfExtentMax, i));
+            AddBrickAt(FIntVector(X, halfExtentMax, i), true);
+            AddBrickAt(FIntVector(X, -halfExtentMax, i), true);
         }
         // Left and right edges (excluding corners)
         for (int32 Y = -halfExtentMax + 1; Y < halfExtentMax; ++Y)
         {
-            AddBrickAt(FIntVector(halfExtentMax, Y, i));
-            AddBrickAt(FIntVector(-halfExtentMax, Y, i));
+            AddBrickAt(FIntVector(halfExtentMax, Y, i), true);
+            AddBrickAt(FIntVector(-halfExtentMax, Y, i), true);
         }
         // Top and bottom edges
         for (int32 X = -halfExtentMin; X <= halfExtentMin; ++X)
         {
-            AddBrickAt(FIntVector(X, halfExtentMin, i));
-            AddBrickAt(FIntVector(X, -halfExtentMin, i));
+            AddBrickAt(FIntVector(X, halfExtentMin, i), true);
+            AddBrickAt(FIntVector(X, -halfExtentMin, i), true);
         }
         // Left and right edges (excluding corners)
         for (int32 Y = -halfExtentMin + 1; Y < halfExtentMin; ++Y)
         {
-            AddBrickAt(FIntVector(halfExtentMin, Y, i));
-            AddBrickAt(FIntVector(-halfExtentMin, Y, i));
+            AddBrickAt(FIntVector(halfExtentMin, Y, i), true);
+            AddBrickAt(FIntVector(-halfExtentMin, Y, i), true);
         }
     }
 
 }
 
-bool AWorldBuilder::AddBrickAt(const FIntVector& GridPos)
+bool AWorldBuilder::AddBrickAt(const FIntVector& GridPos, bool init)
 {
-    if (BrickMap.Contains(GridPos))
-    {
-        return false;
-    }
+    if (BrickMap.Contains(GridPos)) return false;
+
+    if (!init && !IsValidBuild(GridPos)) return false;
 
     FVector WorldLocation = FVector(GridPos) * CellSize;
     FTransform InstanceTransform(WorldLocation);
@@ -189,5 +188,30 @@ bool AWorldBuilder::GetAdjacentGridPositionFromHit(const FHitResult& HitResult, 
     FIntVector Offset(OffX, OffY, OffZ);
 
     OutAdjacentGridPos = BaseGridPos + Offset;
+    return true;
+}
+
+bool AWorldBuilder::IsValidBuild(const FIntVector& GridPos) const
+{
+    // Only consider X/Y for the walls
+    const int32 X = GridPos.X;
+    const int32 Y = GridPos.Y;
+    const int32 AbsX = FMath::Abs(X);
+    const int32 AbsY = FMath::Abs(Y);
+
+    // 1) Outside the outer wall?  Reject.
+    if (AbsX >= halfExtentRTMax || AbsY >= halfExtentRTMax)
+    {
+        return false;
+    }
+
+    // 2) Inside the inner wall?  (i.e. fully enclosed by it)  Reject.
+    //    We only reject if *both* X and Y lie within the smaller square.
+    if (AbsX <= halfExtentRTMin && AbsY <= halfExtentRTMin)
+    {
+        return false;
+    }
+
+    // 3) Otherwise it lies between the two walls.  Accept.
     return true;
 }

@@ -15,7 +15,7 @@ public:
 
     /** Adds a brick at GridPos if none exists. Returns true if added. */
     UFUNCTION(BlueprintCallable, Category = "Bricks")
-    bool AddBrickAt(const FIntVector& GridPos);
+    bool AddBrickAt(const FIntVector& GridPos, bool init = false);
 
     /** Removes the brick at GridPos if exists. Returns true if removed. */
     UFUNCTION(BlueprintCallable, Category = "Bricks")
@@ -50,17 +50,17 @@ protected:
 
     // Grid cell size
     UPROPERTY(EditAnywhere, Category = "Bricks")
-    float CellSize = 100.f;
+    float CellSize{ 100.f };
 
     // Half extent
     UPROPERTY(EditAnywhere, Category = "Bricks")
-    int32 halfExtentBP = 25;
+    int32 halfExtentBP{ 25 };
 
     UPROPERTY(EditAnywhere, Category = "Bricks")
-    int32 halfExtentRTMax = 40;
+    int32 halfExtentRTMax{ 40 };
 
     UPROPERTY(EditAnywhere, Category = "Bricks")
-    int32 halfExtentRTMin = 25;
+    int32 halfExtentRTMin{ 25 };
 
 private:
     // Mapping from grid pos to instance index
@@ -71,4 +71,5 @@ private:
 
     void PopulateFloor(int32 halfExtentMax, int32 halfExtentMin);
     void PopulateDefaultWalls(int32 halfExtentMax, int32 halfExtentMin);
+    bool IsValidBuild(const FIntVector& GridPos) const;
 };
