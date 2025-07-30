@@ -14,4 +14,20 @@ class VINDOLANDA_API AVindolandaGameMode : public ATopDownGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+	AVindolandaGameMode();
+
+protected:
+	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, Category = "Spawning", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AActor> enemyToSpawn;
+
+	UPROPERTY(EditAnywhere, Category = "Spawning", meta = (AllowPrivateAccess = "true"))
+	float spawnInterval = 1.f;
+
+private:
+	FTimerHandle spawnTimerHandle;
+
+	void SpawnEnemy();
 };
