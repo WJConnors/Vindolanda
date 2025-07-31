@@ -18,13 +18,13 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void SetTarget(AStaticMeshActor& targetActor) { target = targetActor; }
+	void SetTC(AStaticMeshActor* targetActor) { townCentre = targetActor; }
 
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<AStaticMeshActor> target{ nullptr };
+	TObjectPtr<AStaticMeshActor> townCentre{ nullptr };
 
 private:
 	FVector spawnLoc;

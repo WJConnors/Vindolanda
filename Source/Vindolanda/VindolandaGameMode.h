@@ -26,6 +26,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Spawning", meta = (AllowPrivateAccess = "true"))
 	float spawnInterval = 1.f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Building")
+	AStaticMeshActor* townCentre{ nullptr };
+
 private:
 	FTimerHandle spawnTimerHandle;
 

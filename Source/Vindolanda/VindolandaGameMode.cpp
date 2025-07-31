@@ -5,6 +5,9 @@
 #include "TimerManager.h"
 #include "Engine/World.h"
 #include "NavigationSystem.h"
+#include "BaseEnemy.h"
+#include "Kismet/GameplayStatics.h"
+#include "Engine/StaticMeshActor.h"
 
 AVindolandaGameMode::AVindolandaGameMode()
 {
@@ -13,6 +16,10 @@ AVindolandaGameMode::AVindolandaGameMode()
 void AVindolandaGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TArray<AActor*> Found;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("TownCentre"), Found);
+	if (Found.Num() > 0) townCentre = Cast<AStaticMeshActor>(Found[0]);
 
 	if (enemyToSpawn)
 	{
@@ -29,10 +36,8 @@ void AVindolandaGameMode::BeginPlay()
 
 void AVindolandaGameMode::SpawnEnemy()
 {
-	UE_LOG(LogTemp, Warning, TEXT("SPAWING"));
 	UWorld* world = GetWorld();
 	if (!world || !enemyToSpawn) return;
-	UE_LOG(LogTemp, Warning, TEXT("PASSED FIRST CHECK"));
 
 	FVector origin(0, 0, 0);
 	float radius = 1000.f;
@@ -46,11 +51,16 @@ void AVindolandaGameMode::SpawnEnemy()
 		params.SpawnCollisionHandlingOverride =
 			ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 		FVector spawnLoc = navLoc.Location + FVector(0.f, 0.f, 90.f);
-		world->SpawnActor<AActor>(
+		ABaseEnemy* spawnedEnemy = Cast<ABaseEnemy>(world->SpawnActor<AActor>(
 			enemyToSpawn,
 			spawnLoc,
 			FRotator::ZeroRotator,
 			params
-		);
+		));
+		if (townCentre)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("has a TC"));
+			spawnedEnemy->SetTC(townCentre);
+		}
 	}
 }
