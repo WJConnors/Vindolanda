@@ -64,7 +64,7 @@ void ATopDownPlayerController::SelectAction(const FInputActionValue& value)
 
 		if (selectedActor->GetClass()->ImplementsInterface(USelectableInterface::StaticClass()))
 		{
-			ISelectableInterface::Execute_SelectActor(selectedActor, true);
+			if (Cast<ABasePawn>(selectedActor)->IsSelectable()) ISelectableInterface::Execute_SelectActor(selectedActor, true);
 		}
 	}
 }
@@ -152,8 +152,11 @@ void ATopDownPlayerController::SelectMultipleActors()
 			{
 				if (actor->GetClass()->ImplementsInterface(USelectableInterface::StaticClass()))
 				{
-					ISelectableInterface::Execute_SelectActor(actor, true);
-					selectedActors.AddUnique(actor);
+					if (Cast<ABasePawn>(actor)->IsSelectable())
+					{
+						ISelectableInterface::Execute_SelectActor(actor, true);
+						selectedActors.AddUnique(actor);
+					}
 				}
 			}
 		}

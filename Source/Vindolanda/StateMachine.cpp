@@ -24,13 +24,13 @@ void StateMachine::AddTransition(StateTransition* InTransition) {
     AllTransitions.Add(InTransition->GetSourceState(), InTransition);
 }
 
-void StateMachine::Update(float DeltaTime) {
+void StateMachine::Update() {
     if (!ActiveState) {
         return;
     }
 
     // Update current state
-    ActiveState->Update(DeltaTime);
+    ActiveState->Update();
 
     // Check all outgoing transitions
     for (auto It = AllTransitions.CreateConstKeyIterator(ActiveState); It; ++It) {

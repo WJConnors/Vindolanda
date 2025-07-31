@@ -6,9 +6,8 @@
 #include "BasePawn.h"
 #include "BaseEnemy.generated.h"
 
-/**
- * 
- */
+class StateMachine;
+
 UCLASS()
 class VINDOLANDA_API ABaseEnemy : public ABasePawn
 {
@@ -16,6 +15,8 @@ class VINDOLANDA_API ABaseEnemy : public ABasePawn
 
 public:
 	ABaseEnemy();
+
+	virtual void Tick(float DeltaTime) override;
 
 	void SetTarget(AStaticMeshActor& targetActor) { target = targetActor; }
 
@@ -27,5 +28,7 @@ protected:
 
 private:
 	FVector spawnLoc;
+
+	TObjectPtr<StateMachine> stateMachine;
 	
 };

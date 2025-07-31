@@ -23,7 +23,7 @@ public:
     void AddTransition(StateTransition* InTransition);
 
     /** Call this every frame with DeltaTime */
-    virtual void Update(float DeltaTime);
+    virtual void Update();
 
 protected:
     /** The currently active state */

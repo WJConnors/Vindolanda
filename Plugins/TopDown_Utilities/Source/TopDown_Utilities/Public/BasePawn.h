@@ -36,6 +36,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, meta = (AllowPrivateAccess = "true"))
 	EPawnType pawnType{ EPawnType::Villager };
 
+	bool selectable{ true };
+
 public:
 	// Sets default values for this pawn's properties
 	ABasePawn();
@@ -68,5 +70,7 @@ public:
 	void MoveToLocation_Implementation(const FVector targetLocation) override;
 
 	EPawnType GetPawnType_Implementation() override;
+
+	bool IsSelectable() { return selectable; }
 
 };

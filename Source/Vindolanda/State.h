@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 
-using StateUpdateFunction = TFunction<void(float)>;
+using StateUpdateFunction = TFunction<void()>;
 
 /**
  * A simple updatable state that calls a stored function each tick.
@@ -14,9 +14,9 @@ public:
         : Func(MoveTemp(InFunc)) {}
 
     /** Called each Update() with DeltaTime */
-    void Update(float DeltaTime) {
+    void Update() {
         if (Func) {
-            Func(DeltaTime);
+            Func();
         }
     }
 
