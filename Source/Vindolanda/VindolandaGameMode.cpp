@@ -59,7 +59,6 @@ void AVindolandaGameMode::SpawnEnemy()
 		));
 		if (townCentre)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("has a TC"));
 			spawnedEnemy->SetTC(townCentre);
 		}
 	}

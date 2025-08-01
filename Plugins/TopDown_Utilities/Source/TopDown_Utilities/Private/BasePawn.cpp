@@ -7,6 +7,7 @@
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "AIController.h"
+#include "NavigationSystem.h"
 
 // Sets default values
 ABasePawn::ABasePawn()
@@ -88,11 +89,31 @@ void ABasePawn::SelectActor_Implementation(const bool select)
 
 void ABasePawn::MoveToLocation_Implementation(const FVector targetLocation)
 {
-	moveTargetLocation = targetLocation + FVector(0, 0, GetDefaultHalfHeight());
+	moveTargetLocation = targetLocation;
 	bMoving = true;
 
-	AAIController* pawnAIController = Cast<AAIController>(GetController());
-	pawnAIController->MoveToLocation(targetLocation, stopDistance);
+	//AAIController* pawnAIController = Cast<AAIController>(GetController());
+	//pawnAIController->MoveToLocation(moveTargetLocation, stopDistance);
+
+	if (AAIController* C = Cast<AAIController>(GetController()))
+	{
+		UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld());
+		if (NavSys)
+		{
+			FNavLocation navLoc;
+			const FVector searchExtent(150.f, 150.f, 150.f);
+			if (NavSys->ProjectPointToNavigation(targetLocation, navLoc, searchExtent))
+			{
+				C->MoveToLocation(navLoc.Location, stopDistance);
+
+			}
+		}
+	}
+}
+
+void ABasePawn::SetSelectable(bool b)
+{
+	selectable = b;
 }
 
 EPawnType ABasePawn::GetPawnType_Implementation()

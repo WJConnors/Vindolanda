@@ -2,6 +2,7 @@
 
 
 #include "TopDownHUD.h"
+#include "BasePawn.h"
 
 void ATopDownHUD::DrawHUD()
 {
@@ -41,6 +42,14 @@ void ATopDownHUD::SelectActorsInRect()
 	FVector2D firstPoint = selectStart;
 	FVector2D secondPoint = selectStart + selectSize;
 	GetActorsInSelectionRectangle<AActor>(firstPoint, secondPoint, selectedActors, false);
+
+	selectedActors.RemoveAll([](AActor* Actor) {
+		if (ABasePawn* Pawn = Cast<ABasePawn>(Actor))
+		{
+			return !Pawn->IsSelectable();
+		}
+		return true;
+		});
 
 	bSelectActors = false;
 }

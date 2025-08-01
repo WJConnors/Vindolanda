@@ -71,6 +71,8 @@ public:
 
 	EPawnType GetPawnType_Implementation() override;
 
-	bool IsSelectable() { return selectable; }
+	bool IsSelectable() const { return selectable; }
+
+	void SetSelectable(bool b);
 
 };

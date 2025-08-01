@@ -57,15 +57,32 @@ void ATopDownPlayerController::SelectAction(const FInputActionValue& value)
 		}
 	}
 
-	selectedActor = hit.GetActor();
-
-	if (selectedActor)
+	AActor* hitActor = hit.GetActor();
+	if (!hitActor)
 	{
+		selectedActor = nullptr;
+		return;
+	}
 
-		if (selectedActor->GetClass()->ImplementsInterface(USelectableInterface::StaticClass()))
+	if (ABasePawn* pawn = Cast<ABasePawn>(hitActor))
+	{
+		if (Cast<ABasePawn>(hit.GetActor())->IsSelectable())
 		{
-			if (Cast<ABasePawn>(selectedActor)->IsSelectable()) ISelectableInterface::Execute_SelectActor(selectedActor, true);
+			selectedActor = hit.GetActor();
+
+			if (selectedActor)
+			{
+
+				if (selectedActor->GetClass()->ImplementsInterface(USelectableInterface::StaticClass()))
+				{
+					ISelectableInterface::Execute_SelectActor(selectedActor, true);
+				}
+			}
 		}
+	}
+	else
+	{
+		selectedActor = nullptr;
 	}
 }
 

@@ -39,7 +39,8 @@ public class TopDown_Utilities : ModuleRules
 				"Slate",
 				"SlateCore",
 				"EnhancedInput",
-				"AIModule"
+				"AIModule",
+				"NavigationSystem"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
