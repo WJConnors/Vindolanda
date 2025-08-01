@@ -26,6 +26,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<AStaticMeshActor> townCentre{ nullptr };
 
+	float stopDistance{ 150.f };
+
 private:
 	FVector spawnLoc;
 

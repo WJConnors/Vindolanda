@@ -43,6 +43,15 @@ void ABaseEnemy::BeginPlay()
 		}
 		return false;
 		}));
+
+	stateMachine->AddTransition(new StateTransition(goToTC, runAway, [&]()->bool {
+		if (FVector::Dist(GetActorLocation(), townCentre->GetActorLocation()) < stopDistance)
+		{
+			MoveToLocation_Implementation(spawnLoc);
+			return true;
+		}
+		return false;
+		}));
 }
 
 void ABaseEnemy::Tick(float DeltaTime)
