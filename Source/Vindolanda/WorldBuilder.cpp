@@ -81,14 +81,14 @@ void AWorldBuilder::PopulateDefaultWalls(int32 halfExtentMax, int32 halfExtentMi
         // Top and bottom edges
         for (int32 X = -halfExtentMax; X <= halfExtentMax; ++X)
         {
-            AddBrickAt(FIntVector(X, halfExtentMax, i), true);
-            AddBrickAt(FIntVector(X, -halfExtentMax, i), true);
+            if (X < -66 || (X > -52 && X < 40) || X > 70) AddBrickAt(FIntVector(X, halfExtentMax, i), true);
+            if (X < -80 || (X > -44 && X < 46) || X > 74) AddBrickAt(FIntVector(X, -halfExtentMax, i), true);
         }
         // Left and right edges (excluding corners)
         for (int32 Y = -halfExtentMax + 1; Y < halfExtentMax; ++Y)
         {
-            AddBrickAt(FIntVector(halfExtentMax, Y, i), true);
-            AddBrickAt(FIntVector(-halfExtentMax, Y, i), true);
+            if (Y < -12 || Y > 25) AddBrickAt(FIntVector(halfExtentMax, Y, i), true);
+            if (Y < 60 || Y > 90) AddBrickAt(FIntVector(-halfExtentMax, Y, i), true);
         }
         // Top and bottom edges
         for (int32 X = -halfExtentMin; X <= halfExtentMin; ++X)
