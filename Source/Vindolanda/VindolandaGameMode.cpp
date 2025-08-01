@@ -40,26 +40,30 @@ void AVindolandaGameMode::SpawnEnemy()
 	if (!world || !enemyToSpawn) return;
 
 	FVector origin(0, 0, 0);
-	float radius = 1000.f;
+	float radius = 15000.f;
 	FNavLocation navLoc;
 
 	UNavigationSystemV1* navSys = UNavigationSystemV1::GetCurrent(world);
-	if (navSys && navSys->GetRandomPointInNavigableRadius(origin, radius, navLoc))
+
+	if (!navSys) return;
+
+	do {
+		navSys->GetRandomPointInNavigableRadius(origin, radius, navLoc);
+	} while (abs(navLoc.Location.X) > 11000 && abs(navLoc.Location.Y) > 11000);
+
+	FActorSpawnParameters params;
+	params.Owner = this;
+	params.SpawnCollisionHandlingOverride =
+		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	FVector spawnLoc = navLoc.Location + FVector(0.f, 0.f, 90.f);
+	ABaseEnemy* spawnedEnemy = Cast<ABaseEnemy>(world->SpawnActor<AActor>(
+		enemyToSpawn,
+		spawnLoc,
+		FRotator::ZeroRotator,
+		params
+	));
+	if (townCentre)
 	{
-		FActorSpawnParameters params;
-		params.Owner = this;
-		params.SpawnCollisionHandlingOverride =
-			ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-		FVector spawnLoc = navLoc.Location + FVector(0.f, 0.f, 90.f);
-		ABaseEnemy* spawnedEnemy = Cast<ABaseEnemy>(world->SpawnActor<AActor>(
-			enemyToSpawn,
-			spawnLoc,
-			FRotator::ZeroRotator,
-			params
-		));
-		if (townCentre)
-		{
-			spawnedEnemy->SetTC(townCentre);
-		}
+		spawnedEnemy->SetTC(townCentre);
 	}
 }
