@@ -1,123 +1,79 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+﻿// BasePawn.cpp
 
 #include "BasePawn.h"
-#include "Components/CapsuleComponent.h"
-#include "Components/SkeletalMeshComponent.h"
-#include "GameFramework/FloatingPawnMovement.h"
-#include "Kismet/KismetMathLibrary.h"
+#include "Components/CapsuleComponent.h"     // <-- so UCapsuleComponent is a complete type
+#include "GameFramework/CharacterMovementComponent.h"
 #include "AIController.h"
 #include "NavigationSystem.h"
+#include "Components/StaticMeshComponent.h"
 
-// Sets default values
-ABasePawn::ABasePawn()
+ABasePawn::ABasePawn(const FObjectInitializer& ObjInit)
+    : Super(ObjInit)
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+    UCapsuleComponent* Capsule = GetCapsuleComponent();
+    check(Capsule);
 
-	capsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
-	RootComponent = Cast<USceneComponent>(capsuleComponent);
-	capsuleComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+    PrimaryActorTick.bCanEverTick = true;
 
-	skeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
-	skeletalMesh->SetupAttachment(RootComponent);
+    // configure CharacterMovementComponent as before…
+    UCharacterMovementComponent* MoveComp = GetCharacterMovement();
+    MoveComp->bOrientRotationToMovement = true;
+    MoveComp->RotationRate = FRotator(0, 640.f, 0);
+    MoveComp->SetMovementMode(MOVE_Walking);
+    MoveComp->bUseRVOAvoidance = true;
+    MoveComp->AvoidanceConsiderationRadius = 100.f;
+    MoveComp->AvoidanceWeight = 0.5f;
+    MoveComp->SetAvoidanceEnabled(true);
 
-	floatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("FloatingMovement"));
-
-	selectedIndicator = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SelectedIndicator"));
-	selectedIndicator->SetupAttachment(RootComponent);
-	selectedIndicator->SetHiddenInGame(true);
-	selectedIndicator->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    SelectedIndicator = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SelectedIndicator"));
+    SelectedIndicator->SetupAttachment(RootComponent);
+    SelectedIndicator->SetHiddenInGame(true);
+    SelectedIndicator->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-// Called when the game starts or when spawned
 void ABasePawn::BeginPlay()
 {
-	Super::BeginPlay();
-	
+    Super::BeginPlay();
 }
 
-// Called every frame
 void ABasePawn::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-
-	OrientToMovement();
-
+    Super::Tick(DeltaTime);
+    // no manual OrientToMovement() needed—CharacterMovementComponent handles it
 }
 
-void ABasePawn::OrientToMovement()
+void ABasePawn::SelectActorLocal(bool bSelect)
 {
-	if (!bMoving)
-	{
-		return;
-	}
-
-	FVector moveDirection{ moveTargetLocation - GetActorLocation() };
-	if (moveDirection.Length() < stopDistance)
-	{
-		bMoving = false;
-		return;
-	}
-
-	moveDirection.Normalize(1);
-	//AddMovementInput(moveDirection, 1.f);
-
-	FRotator finalRotation{ 0.0f, UKismetMathLibrary::MakeRotFromX(moveDirection).Yaw, 0.0f };
-
-	FRotator newRotation = FMath::RInterpTo(GetActorRotation(), finalRotation, GetWorld()->GetDeltaSeconds(), rotateSpeed);
-
-	SetActorRotation(newRotation);
+    SelectedIndicator->SetHiddenInGame(!bSelect);
 }
 
-// Called to bind functionality to input
-void ABasePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ABasePawn::SelectActor_Implementation(bool bSelect)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+    SelectActorLocal(bSelect);
 }
 
-void ABasePawn::SelectActorLocal(const bool select)
+void ABasePawn::MoveToLocation_Implementation(const FVector TargetLocation)
 {
-	selectedIndicator->SetHiddenInGame(!select);
-}
-
-void ABasePawn::SelectActor_Implementation(const bool select)
-{
-	selectedIndicator->SetHiddenInGame(!select);
-}
-
-void ABasePawn::MoveToLocation_Implementation(const FVector targetLocation)
-{
-	moveTargetLocation = targetLocation;
-	bMoving = true;
-
-	//AAIController* pawnAIController = Cast<AAIController>(GetController());
-	//pawnAIController->MoveToLocation(moveTargetLocation, stopDistance);
-
-	if (AAIController* C = Cast<AAIController>(GetController()))
-	{
-		UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld());
-		if (NavSys)
-		{
-			FNavLocation navLoc;
-			const FVector searchExtent(150.f, 150.f, 150.f);
-			if (NavSys->ProjectPointToNavigation(targetLocation, navLoc, searchExtent))
-			{
-				C->MoveToLocation(navLoc.Location, stopDistance);
-
-			}
-		}
-	}
+    if (AAIController* C = Cast<AAIController>(GetController()))
+    {
+        if (UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld()))
+        {
+            FNavLocation NavLoc;
+            FVector SearchExt(150.f, 150.f, 150.f);
+            if (NavSys->ProjectPointToNavigation(TargetLocation, NavLoc, SearchExt))
+            {
+                C->MoveToLocation(NavLoc.Location, StopDistance);
+            }
+        }
+    }
 }
 
 void ABasePawn::SetSelectable(bool b)
 {
-	selectable = b;
+    bSelectable = b;
 }
 
 EPawnType ABasePawn::GetPawnType_Implementation()
 {
-	return pawnType;
+    return pawnType;
 }
-

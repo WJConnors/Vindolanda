@@ -14,7 +14,7 @@ class VINDOLANDA_API ABaseEnemy : public ABasePawn
 	GENERATED_BODY()
 
 public:
-	ABaseEnemy();
+	ABaseEnemy(const FObjectInitializer& ObjInit = FObjectInitializer::Get());
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -26,7 +26,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<AStaticMeshActor> townCentre{ nullptr };
 
-	float stopDistance{ 200.f };
+	float StopDistance{ 200.f };
 
 private:
 	FVector spawnLoc;

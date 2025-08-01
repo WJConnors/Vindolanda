@@ -49,7 +49,7 @@ void AVindolandaGameMode::SpawnEnemy()
 
 	do {
 		navSys->GetRandomPointInNavigableRadius(origin, radius, navLoc);
-	} while (abs(navLoc.Location.X) > 11000 && abs(navLoc.Location.Y) > 11000);
+	} while (abs(navLoc.Location.X) < 11000 && abs(navLoc.Location.Y) < 11000);
 
 	FActorSpawnParameters params;
 	params.Owner = this;

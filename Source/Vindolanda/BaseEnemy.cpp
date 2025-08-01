@@ -7,10 +7,13 @@
 #include "State.h"
 #include "Engine/StaticMeshActor.h"
 #include "AIController.h"
+#include "DetourCrowdAIController.h"
 
-ABaseEnemy::ABaseEnemy()
+ABaseEnemy::ABaseEnemy(const FObjectInitializer& ObjInit)
+	: Super(ObjInit)   // this runs ABasePawn(const FObjectInitializer&) then ACharacter
 {
-	AIControllerClass = AAIController::StaticClass();
+	// now you can safely tweak AIControllerClass etc.
+	AIControllerClass = ADetourCrowdAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	SetSelectable(false);
 }
@@ -18,10 +21,6 @@ ABaseEnemy::ABaseEnemy()
 void ABaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SetSelectable(false);
-
-	if (!GetController()) SpawnDefaultController();
 
 	spawnLoc = GetActorLocation();
 
@@ -45,7 +44,7 @@ void ABaseEnemy::BeginPlay()
 		}));
 
 	stateMachine->AddTransition(new StateTransition(goToTC, runAway, [&]()->bool {
-		if (FVector::Dist(GetActorLocation(), townCentre->GetActorLocation()) < stopDistance)
+		if (FVector::Dist(GetActorLocation(), townCentre->GetActorLocation()) < StopDistance)
 		{
 			MoveToLocation_Implementation(spawnLoc);
 			return true;
