@@ -5,6 +5,9 @@
 #include "Components/BoxComponent.h"
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
+#include "Engine/EngineTypes.h"
+#include "Engine/OverlapResult.h"
+
 
 // Sets default values
 ABaseBuilding::ABaseBuilding()
@@ -68,46 +71,63 @@ void ABaseBuilding::EnablePlacing()
 
 void ABaseBuilding::CheckPlacementValidity()
 {
+	// 1) Project mouse onto floor plane
+	APlayerController* PC = GetWorld()->GetFirstPlayerController();
+	if (!PC) return;
 
-	ToggleValidity(bCanPlace);
-
-	bCanPlace = false;
-	FHitResult hit;
-	GetWorld()->GetFirstPlayerController()->GetHitResultUnderCursor(ECC_Visibility, false, hit);
-	if (!hit.bBlockingHit)
-	{
+	FVector WorldOrigin, WorldDir;
+	if (!PC->DeprojectMousePositionToWorld(WorldOrigin, WorldDir))
 		return;
+
+	const float FloorZ = 0.f;  // adjust if your ground isn't at Z=0
+	float T = (FloorZ - WorldOrigin.Z) / WorldDir.Z;
+	FVector GroundPos = WorldOrigin + WorldDir * T;
+
+	// 2) Compute mesh bottom offset
+	FVector LocalMin, LocalMax;
+	float BottomOffset = 0.f;
+	if (staticMesh)
+	{
+		staticMesh->GetLocalBounds(LocalMin, LocalMax);
+		BottomOffset = -LocalMin.Z;
 	}
 
-	FVector modifiedLocation{ hit.Location + FVector(0.f, 0.f, 100.f) };
-	SetActorLocation(modifiedLocation);
+	// 3) Position preview so mesh bottom sits on the floor
+	FVector PlacePos = GroundPos + FVector(0.f, 0.f, BottomOffset);
+	SetActorLocation(PlacePos);
 
-	if (!hit.GetActor()->ActorHasTag(requiredTag))
+	// 4) Overlap test against world static objects (ignoring floor)
+	FVector HalfExt = buildingExtents * 0.5f;
+	FCollisionShape BoxShape = FCollisionShape::MakeBox(HalfExt);
+	FCollisionQueryParams QParams;
+	QParams.AddIgnoredActor(this);
+
+	TArray<FOverlapResult> OutResults;
+	bool bHit = GetWorld()->OverlapMultiByChannel(
+		OutResults,
+		PlacePos,
+		FQuat::Identity,
+		ECC_WorldStatic,
+		BoxShape,
+		QParams
+	);
+
+	bool bCollidesInvalid = false;
+	for (const FOverlapResult& R : OutResults)
 	{
-		return;
-	}
-
-	FVector boxHalfExtent = buildingExtents / 2;
-	FVector traceStart = modifiedLocation + FVector(0.f, 0.f, boxHalfExtent.Z);
-	FVector traceEnd = traceStart + FVector::UpVector;
-
-	FCollisionQueryParams collisionParams;
-	collisionParams.AddIgnoredActor(this);
-	collisionParams.bTraceComplex = false;
-	TArray<FHitResult> outHits;
-
-	bool boxHit = GetWorld()->SweepMultiByChannel(outHits, traceStart, traceEnd, GetActorRotation().Quaternion(), ECC_Visibility, FCollisionShape::MakeBox(boxHalfExtent), collisionParams);
-
-	for (const FHitResult& bHit : outHits)
-	{
-		if (!(bHit.GetActor() != nullptr && bHit.GetActor()->ActorHasTag(requiredTag)))
+		if (AActor* Other = R.GetActor())
 		{
-			break;
+			// skip floor (ensure your floor actor has this tag)
+			if (!Other->ActorHasTag(requiredTag))
+			{
+				bCollidesInvalid = true;
+				break;
+			}
 		}
 	}
 
-	bCanPlace = true;
-	
+	bCanPlace = !bCollidesInvalid;
+	ToggleValidity(bCanPlace);
 }
 
 void ABaseBuilding::PlaceBuilding(const FInputActionValue& value)
