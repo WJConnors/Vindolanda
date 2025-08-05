@@ -25,12 +25,6 @@ void ABaseBuilding::CreateBuilding()
 {
 	staticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	RootComponent = staticMesh;
-
-	selectedIndicator = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SelectedIndicator"));
-	selectedIndicator->SetupAttachment(RootComponent);
-	selectedIndicator->SetHiddenInGame(true);
-	selectedIndicator->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	selectedIndicator->SetRelativeLocation(FVector(0.f, 0.f, -100.f));
 }
 
 // Called when the game starts or when spawned
@@ -45,11 +39,6 @@ void ABaseBuilding::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-}
-
-void ABaseBuilding::SelectActor_Implementation(const bool select)
-{
-	selectedIndicator->SetHiddenInGame(!select);
 }
 
 void ABaseBuilding::EnablePlacing()

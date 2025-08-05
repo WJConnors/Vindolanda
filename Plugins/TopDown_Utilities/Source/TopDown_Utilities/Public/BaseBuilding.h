@@ -13,7 +13,7 @@ class UInputAction;
 struct FInputActionValue;
 
 UCLASS()
-class TOPDOWN_UTILITIES_API ABaseBuilding : public AActor, public ISelectableInterface
+class TOPDOWN_UTILITIES_API ABaseBuilding : public AActor
 {
 	GENERATED_BODY()
 	
@@ -24,9 +24,6 @@ public:
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> staticMesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pawn, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UStaticMeshComponent> selectedIndicator;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Building, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> placeAction;
@@ -52,8 +49,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	void SelectActor_Implementation(const bool select) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Building")
 	void EnablePlacing();
