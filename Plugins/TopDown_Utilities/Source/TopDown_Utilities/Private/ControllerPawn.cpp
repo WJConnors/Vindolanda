@@ -55,12 +55,14 @@ void AControllerPawn::Move(const FInputActionValue& value)
 void AControllerPawn::Zoom(const FInputActionValue& value)
 {
 	const float zoomDirection = value.Get<float>();
-	if (Controller)
+
+	if (springArm)
 	{
-		 float newWidth = camera->OrthoWidth + zoomDirection * zoomSpeed;
-		 newWidth = FMath::Clamp(newWidth, minCameraWidth, maxCameraWidth);
-		 camera->OrthoWidth = newWidth;
+		float newLength = springArm->TargetArmLength + zoomDirection * zoomSpeed;
+		//newLength = FMath::Clamp(newLength, minCameraDistance, maxCameraDistance);
+		springArm->TargetArmLength = newLength;
 	}
+
 }
 
 void AControllerPawn::EdgeScroll()
