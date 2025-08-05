@@ -42,6 +42,8 @@ private:
 
 	virtual void CreateBuilding();
 
+	float bottomOffset{ 0.f };
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

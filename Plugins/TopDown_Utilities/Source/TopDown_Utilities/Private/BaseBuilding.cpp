@@ -74,7 +74,7 @@ void ABaseBuilding::CheckPlacementValidity()
 
 	// 2) Compute mesh bottom offset
 	FVector LocalMin, LocalMax;
-	float BottomOffset = 0.f;
+	float BottomOffset = bottomOffset;
 	if (staticMesh)
 	{
 		staticMesh->GetLocalBounds(LocalMin, LocalMax);
