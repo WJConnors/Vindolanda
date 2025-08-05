@@ -69,6 +69,8 @@ private:
     //Quick lookup of which grid‐coordinate lives at a given instance index. 
     TMap<int32, FIntVector> InstanceMap;
 
+    TSet<FIntVector> initialBricks;
+
     void PopulateFloor(int32 halfExtentMax, int32 halfExtentMin);
     void PopulateDefaultWalls(int32 halfExtentMax, int32 halfExtentMin);
     bool IsValidBuild(const FIntVector& GridPos) const;

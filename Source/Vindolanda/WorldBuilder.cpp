@@ -120,6 +120,9 @@ bool AWorldBuilder::AddBrickAt(const FIntVector& GridPos, bool init)
     int32 NewIndex = InstancedBricks->AddInstance(InstanceTransform);
     BrickMap.Add(GridPos, NewIndex);
     InstanceMap.Add(NewIndex, GridPos);
+
+    if (init) initialBricks.Add(GridPos);
+
     GetWorld()->Exec(GetWorld(), TEXT("RebuildNavigation"));
 
     return true;
@@ -127,6 +130,8 @@ bool AWorldBuilder::AddBrickAt(const FIntVector& GridPos, bool init)
 
 bool AWorldBuilder::RemoveBrickAt(const FIntVector& GridPos)
 {
+    if (initialBricks.Contains(GridPos)) return false;
+
     int32* IndexPtr = BrickMap.Find(GridPos);
     if (!IndexPtr) return false;
 
@@ -159,6 +164,7 @@ void AWorldBuilder::ClearBricks()
     InstancedBricks->ClearInstances();
     BrickMap.Empty();
     InstanceMap.Empty();
+    initialBricks.Empty();
 }
 
 bool AWorldBuilder::GetGridPositionFromLocation(const FVector& WorldLocation, FIntVector& OutGridPos, bool isNewFloor) const
