@@ -60,3 +60,8 @@ void ABaseEnemy::Tick(float DeltaTime)
 	stateMachine->Update();
 }
 
+void ABaseEnemy::Damage(float damage)
+{
+	health -= damage;
+	if (health <= 0) Destroy();
+}

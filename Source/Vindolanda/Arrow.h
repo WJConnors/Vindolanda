@@ -25,4 +25,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "Arrow")
 	TObjectPtr<AActor> target{ nullptr };
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Arrow")
+	float damage{ 10.f };
+
 };

@@ -20,6 +20,9 @@ public:
 
 	void SetTC(AStaticMeshActor* targetActor) { townCentre = targetActor; }
 
+	UFUNCTION(BlueprintCallable)
+	void Damage(float damage);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -32,5 +35,7 @@ private:
 	FVector spawnLoc;
 
 	TObjectPtr<StateMachine> stateMachine;
+
+	float health{ 100 };
 	
 };
