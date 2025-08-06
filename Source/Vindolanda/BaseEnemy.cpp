@@ -29,10 +29,14 @@ void ABaseEnemy::BeginPlay()
 	State* idle = new State();
 	State* goToTC = new State();
 	State* runAway = new State();
+	State* taunted = new State([&]()->void {
+		this->Taunted();
+		});
 
 	stateMachine->AddState(idle);
 	stateMachine->AddState(goToTC);
 	stateMachine->AddState(runAway);
+	stateMachine->AddState(taunted);
 
 	stateMachine->AddTransition(new StateTransition(idle, goToTC, [&]()->bool {
 		if (townCentre && GetController())
@@ -51,6 +55,67 @@ void ABaseEnemy::BeginPlay()
 		}
 		return false;
 		}));
+
+	stateMachine->AddTransition(new StateTransition(goToTC, taunted, [&]()->bool {
+		if (isTaunted)
+		{
+			prevState = goToTC;
+			return true;
+		}
+		return false;
+		}));
+
+	stateMachine->AddTransition(new StateTransition(runAway, taunted, [&]()->bool {
+		if (isTaunted)
+		{
+			prevState = runAway;
+			return true;
+		}
+		return false;
+		}));
+
+	stateMachine->AddTransition(new StateTransition(taunted, goToTC, [&]()->bool {
+		if (!isTaunted && prevState == goToTC)
+		{
+			MoveToLocation_Implementation(townCentre->GetActorLocation());
+			return true;
+		}
+		return false;
+		}));
+
+	stateMachine->AddTransition(new StateTransition(taunted, goToTC, [&]()->bool {
+		if (!isTaunted && prevState == runAway)
+		{
+			MoveToLocation_Implementation(spawnLoc);
+			return true;
+		}
+		return false;
+		}));
+
+}
+
+void ABaseEnemy::Taunted()
+{
+	if (!tauntedBy) return;
+
+	const float StopRange = 100.f;
+	const FVector MyLoc = GetActorLocation();
+	const FVector TargetLoc = tauntedBy->GetActorLocation();
+
+	// compare squared distances (cheaper than sqrt)
+	const float DistSq = FVector::DistSquared(MyLoc, TargetLoc);
+	
+	if (DistSq > FMath::Square(StopRange))
+	{
+		MoveToLocation_Implementation(TargetLoc);
+	}
+	else
+	{
+		if (AAIController* AICon = Cast<AAIController>(GetController()))
+		{
+			AICon->StopMovement();
+		}
+	}
 }
 
 void ABaseEnemy::Tick(float DeltaTime)

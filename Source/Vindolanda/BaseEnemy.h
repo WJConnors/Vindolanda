@@ -7,6 +7,7 @@
 #include "BaseEnemy.generated.h"
 
 class StateMachine;
+class State;
 
 UCLASS()
 class VINDOLANDA_API ABaseEnemy : public ABasePawn
@@ -23,6 +24,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Damage(float damage);
 
+	UFUNCTION(BlueprintCallable)
+	bool GetIsTaunted() const { return isTaunted; }
+	UFUNCTION(BlueprintCallable)
+	void SetIsTaunted(bool b) { isTaunted = b; }
+
+	UFUNCTION(BlueprintCallable)
+	AActor* GetTauntedBy() const { return tauntedBy.Get(); }
+	UFUNCTION(BlueprintCallable)
+	void SetTauntedBy(AActor* a) { tauntedBy = a; }
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -37,5 +48,13 @@ private:
 	TObjectPtr<StateMachine> stateMachine;
 
 	float health{ 100 };
+
+	bool isTaunted{ false };
+
+	State* prevState{ nullptr };
+
+	void Taunted();
+
+	TObjectPtr<AActor> tauntedBy{ nullptr };
 	
 };
