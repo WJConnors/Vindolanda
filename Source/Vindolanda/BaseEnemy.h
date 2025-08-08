@@ -56,5 +56,7 @@ private:
 	void Taunted();
 
 	TObjectPtr<AActor> tauntedBy{ nullptr };
+
+	void EndLife();
 	
 };

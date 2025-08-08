@@ -28,7 +28,9 @@ void ABaseEnemy::BeginPlay()
 
 	State* idle = new State();
 	State* goToTC = new State();
-	State* runAway = new State();
+	State* runAway = new State([&]()->void {
+		this->EndLife();
+		});
 	State* taunted = new State([&]()->void {
 		this->Taunted();
 		});
@@ -116,6 +118,14 @@ void ABaseEnemy::Taunted()
 			AICon->StopMovement();
 		}
 	}
+}
+
+void ABaseEnemy::EndLife()
+{
+	if (FVector::Dist(GetActorLocation(), spawnLoc) < StopDistance)
+	{
+		Destroy();
+	}	
 }
 
 void ABaseEnemy::Tick(float DeltaTime)
