@@ -140,11 +140,14 @@ void ABaseEnemy::Tick(float DeltaTime)
 void ABaseEnemy::Damage(float damage)
 {
 	health -= damage;
-	if (health <= 0) EndLife();
+	if (health <= 0)
+	{
+		ReturnGold();
+		EndLife();
+	}
 }
 
 void ABaseEnemy::EndLife()
 {
-	if (hasGold) ReturnGold();
 	Destroy();
 }

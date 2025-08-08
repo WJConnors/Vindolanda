@@ -144,8 +144,17 @@ void AVindolandaGameMode::SetGold(int32 NewAmount)
 
 void AVindolandaGameMode::AddGold(int32 Delta)
 {
+	Gold += Delta;
+	bool gameOver = Gold < 0;
+
+
 	Gold = FMath::Max(0, Gold + Delta);
-	OnGoldChanged(Gold);        
+	OnGoldChanged(Gold);
+
+	if (gameOver)
+	{
+		UKismetSystemLibrary::QuitGame(this, nullptr, EQuitPreference::Quit, false);
+	}
 }
 
 void AVindolandaGameMode::ShowWidgetToToggle(bool bShow) const
