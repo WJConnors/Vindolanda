@@ -43,6 +43,9 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool hasGold{ false };
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void UpdateKilled();
+
 protected:
 	virtual void BeginPlay() override;
 

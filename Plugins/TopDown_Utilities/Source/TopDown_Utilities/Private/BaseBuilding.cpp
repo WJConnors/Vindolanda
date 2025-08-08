@@ -43,15 +43,15 @@ void ABaseBuilding::Tick(float DeltaTime)
 
 void ABaseBuilding::EnablePlacing()
 {
-	APlayerController* playerController = GetWorld()->GetFirstPlayerController();
-	if (playerController)
+	if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
 	{
-		EnableInput(playerController);
-		UEnhancedInputComponent* inputComponent = Cast<UEnhancedInputComponent>(playerController->InputComponent);
-		if (inputComponent)
+		EnableInput(PC);
+		if (auto* EIC = Cast<UEnhancedInputComponent>(PC->InputComponent))
 		{
-			inputComponent->BindAction(placeAction, ETriggerEvent::Completed, this, &ABaseBuilding::PlaceBuilding);
-			inputComponent->BindAction(cancelAction, ETriggerEvent::Completed, this, &ABaseBuilding::CancelBuildingPlacement);
+			auto& B1 = EIC->BindAction(placeAction, ETriggerEvent::Completed, this, &ABaseBuilding::PlaceBuilding);
+			auto& B2 = EIC->BindAction(cancelAction, ETriggerEvent::Completed, this, &ABaseBuilding::CancelBuildingPlacement);
+			PlaceBindingHandle = B1.GetHandle();
+			CancelBindingHandle = B2.GetHandle();
 		}
 	}
 	GetWorld()->GetTimerManager().SetTimer(placementTimerHandle, this, &ABaseBuilding::CheckPlacementValidity, 0.03f, true);
@@ -124,15 +124,22 @@ void ABaseBuilding::CheckPlacementValidity()
 
 void ABaseBuilding::PlaceBuilding(const FInputActionValue& value)
 {
+	if (placed) return;
+	placed = true;
+
+	UnbindInput();
+	GetWorld()->GetTimerManager().ClearTimer(placementTimerHandle);
+
 	if (!bCanPlace)
 	{
 		SetLifeSpan(0.1f);
 		return;
 	}
 
-	GetWorld()->GetTimerManager().ClearTimer(placementTimerHandle);
+
 	this->SetActorEnableCollision(true);
 	TakePayment();
+	GetWorld()->Exec(GetWorld(), TEXT("RebuildNavigation"));
 }
 
 bool ABaseBuilding::PrePlacementRule(const FVector& PlacePos)
@@ -166,4 +173,25 @@ void ABaseBuilding::CancelBuildingPlacement(const FInputActionValue& value)
 	// Kill the preview actor
 	// (You can use SetLifeSpan(0.1f) instead if you prefer a deferred destroy)
 	Destroy();
+}
+
+void ABaseBuilding::UnbindInput()
+{
+	if (APlayerController* PC = GetWorld() ? GetWorld()->GetFirstPlayerController() : nullptr)
+	{
+		if (auto* EIC = Cast<UEnhancedInputComponent>(PC->InputComponent))
+		{
+			if (PlaceBindingHandle != INDEX_NONE)  EIC->RemoveBindingByHandle(PlaceBindingHandle);
+			if (CancelBindingHandle != INDEX_NONE)  EIC->RemoveBindingByHandle(CancelBindingHandle);
+		}
+		DisableInput(PC);
+	}
+	PlaceBindingHandle = INDEX_NONE;
+	CancelBindingHandle = INDEX_NONE;
+}
+
+void ABaseBuilding::EndPlay(const EEndPlayReason::Type Reason)
+{
+	UnbindInput();
+	Super::EndPlay(Reason);
 }

@@ -63,6 +63,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void SetToastWidget(UUserWidget* InWidget) { ToastWidget = InWidget; }
 
+	UFUNCTION(BlueprintCallable, Category = "State")
+	void EnemyKilled();
+
+	UFUNCTION(BlueprintCallable, Category = "State")
+	bool GetIsNight() { return bIsNight; }
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -75,9 +81,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Spawning", meta = (AllowPrivateAccess = "true"))
 	FTransform knightSpawnPosition;
 
-	UPROPERTY(EditAnywhere, Category = "Spawning", meta = (AllowPrivateAccess = "true"))
-	float spawnInterval = 1.f;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Building")
 	AStaticMeshActor* townCentre{ nullptr };
 
@@ -86,7 +89,11 @@ protected:
 
 	int wave{ 0 };
 
-	float spawnTimer{ 5 };
+	float spawnTimer{ 10 };
+
+	int baseNumToKill{ 5 };
+
+	int numToKill{ 0 };
 
 private:
 	FTimerHandle spawnTimerHandle;

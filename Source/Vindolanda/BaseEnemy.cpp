@@ -144,6 +144,7 @@ void ABaseEnemy::Damage(float damage)
 	{
 		ReturnGold();
 		ReturnGold();
+		UpdateKilled();
 		EndLife();
 	}
 }

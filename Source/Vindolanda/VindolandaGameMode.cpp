@@ -108,11 +108,26 @@ void AVindolandaGameMode::EndNight()
 {
 	ShowWidgetToToggle(true);
 	GetWorldTimerManager().ClearTimer(spawnTimerHandle);
+	spawnTimerHandle.Invalidate();
+
+	TArray<AActor*> Enemies;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseEnemy::StaticClass(), Enemies);
+	for (AActor* A : Enemies)
+	{
+		if (A) { A->Destroy(); }
+	}
+
+	bIsNight = false;
 }
 
 void AVindolandaGameMode::BeginNight()
 {
 	if (!lightingManager) return;
+
+	wave++;
+	spawnTimer /= 2;
+	baseNumToKill *= 2;
+	numToKill = baseNumToKill;
 
 	static const FName NAME_SetNight(TEXT("SetNight"));
 	if (UFunction* Func = lightingManager->FindFunction(NAME_SetNight))
@@ -128,9 +143,9 @@ void AVindolandaGameMode::BeginNight()
 			spawnTimerHandle,
 			this,
 			&AVindolandaGameMode::SpawnEnemy,
-			spawnInterval,
+			spawnTimer,
 			true,
-			spawnInterval
+			spawnTimer
 		);
 	}
 
@@ -164,4 +179,10 @@ void AVindolandaGameMode::ShowWidgetToToggle(bool bShow) const
 
 	WidgetToToggle->SetVisibility(bShow ? ESlateVisibility::Visible
 		: ESlateVisibility::Collapsed);
+}
+
+void AVindolandaGameMode::EnemyKilled()
+{
+	numToKill--;
+	if (numToKill <= 0) EndNight();
 }

@@ -21,6 +21,8 @@ public:
 	// Sets default values for this actor's properties
 	ABaseBuilding();
 
+	void EndPlay(const EEndPlayReason::Type Reason);
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Collision, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> staticMesh;
@@ -44,6 +46,8 @@ private:
 
 	float bottomOffset{ 0.f };
 
+	bool placed{ false };
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -53,6 +57,11 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Building", meta = (AllowPrivateAccess = "true"))
 	void TakePayment();
+
+	UPROPERTY() int32 PlaceBindingHandle = INDEX_NONE;
+	UPROPERTY() int32 CancelBindingHandle = INDEX_NONE;
+
+	void UnbindInput();
 
 public:	
 	// Called every frame
