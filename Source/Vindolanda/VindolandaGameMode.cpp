@@ -148,7 +148,7 @@ void AVindolandaGameMode::AddGold(int32 Delta)
 	bool gameOver = Gold < 0;
 
 
-	Gold = FMath::Max(0, Gold + Delta);
+	Gold = FMath::Max(0, Gold);
 	OnGoldChanged(Gold);
 
 	if (gameOver)
