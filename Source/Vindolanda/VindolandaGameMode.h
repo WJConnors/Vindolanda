@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "TopDownGameModeBase.h"
 #include "ResourceData.h"
+
 #include "VindolandaGameMode.generated.h"
+
+class UUserWidget;
 
 /**
  * 
@@ -32,6 +35,18 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Resources")
 	void AddGold(int32 Delta);
+
+	UFUNCTION(BlueprintCallable, Category = "Day")
+	void BeginNight();
+
+	UPROPERTY(BlueprintReadWrite, Category = "UI")
+	TObjectPtr<UUserWidget> WidgetToToggle;
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void SetWidgetToToggle(UUserWidget* InWidget) { WidgetToToggle = InWidget; }
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void ShowWidgetToToggle(bool bShow) const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -60,8 +75,6 @@ private:
 	void SpawnEnemy();
 
 	bool bIsNight{ false };
-
-	void BeginNight();
 
 	void EndNight();
 

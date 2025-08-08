@@ -8,6 +8,7 @@
 #include "BaseEnemy.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/StaticMeshActor.h"
+#include "Blueprint/UserWidget.h"
 
 AVindolandaGameMode::AVindolandaGameMode()
 {
@@ -21,17 +22,7 @@ void AVindolandaGameMode::BeginPlay()
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("TownCentre"), foundTC);
 	if (foundTC.Num() > 0) townCentre = Cast<AStaticMeshActor>(foundTC[0]);
 
-	if (enemyToSpawn)
-	{
-		GetWorldTimerManager().SetTimer(
-			spawnTimerHandle,
-			this,
-			&AVindolandaGameMode::SpawnEnemy,
-			spawnInterval,
-			true,
-			spawnInterval
-		);
-	}
+
 
 	TArray<AActor*> foundLM;
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "LightingManager", foundLM);
@@ -44,7 +35,7 @@ void AVindolandaGameMode::BeginPlay()
 void AVindolandaGameMode::SpawnKnight()
 {
 	UWorld* world = GetWorld();
-	if (!world || !enemyToSpawn) return;
+	if (!world || !knightToSpawn) return;
 
 	UNavigationSystemV1* navSys = UNavigationSystemV1::GetCurrent(world);
 	if (!navSys) return;
@@ -102,6 +93,11 @@ void AVindolandaGameMode::SpawnEnemy()
 	}
 }
 
+void AVindolandaGameMode::EndNight()
+{
+	ShowWidgetToToggle(true);
+}
+
 void AVindolandaGameMode::BeginNight()
 {
 	if (!lightingManager) return;
@@ -113,6 +109,20 @@ void AVindolandaGameMode::BeginNight()
 		lightingManager->ProcessEvent(Func, &Params);
 		bIsNight = true;
 	}
+
+	if (enemyToSpawn)
+	{
+		GetWorldTimerManager().SetTimer(
+			spawnTimerHandle,
+			this,
+			&AVindolandaGameMode::SpawnEnemy,
+			spawnInterval,
+			true,
+			spawnInterval
+		);
+	}
+
+	ShowWidgetToToggle(false);
 }
 
 int32 AVindolandaGameMode::GetGold() const
@@ -138,4 +148,12 @@ void AVindolandaGameMode::AddGold(int32 Delta)
 	{
 		Row->defaultValue = FMath::Max(0, Row->defaultValue + Delta);
 	}
+}
+
+void AVindolandaGameMode::ShowWidgetToToggle(bool bShow) const
+{
+	if (!WidgetToToggle) return;
+
+	WidgetToToggle->SetVisibility(bShow ? ESlateVisibility::Visible
+		: ESlateVisibility::Collapsed);
 }
