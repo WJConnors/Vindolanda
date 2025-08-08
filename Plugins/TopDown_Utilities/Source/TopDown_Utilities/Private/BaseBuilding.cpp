@@ -51,6 +51,7 @@ void ABaseBuilding::EnablePlacing()
 		if (inputComponent)
 		{
 			inputComponent->BindAction(placeAction, ETriggerEvent::Completed, this, &ABaseBuilding::PlaceBuilding);
+			inputComponent->BindAction(cancelAction, ETriggerEvent::Completed, this, &ABaseBuilding::CancelBuildingPlacement);
 		}
 	}
 	GetWorld()->GetTimerManager().SetTimer(placementTimerHandle, this, &ABaseBuilding::CheckPlacementValidity, 0.03f, true);
@@ -84,6 +85,8 @@ void ABaseBuilding::CheckPlacementValidity()
 	// 3) Position preview so mesh bottom sits on the floor
 	FVector PlacePos = GroundPos + FVector(0.f, 0.f, BottomOffset);
 	SetActorLocation(PlacePos);
+
+	if (PrePlacementRule(PlacePos)) return;
 
 	// 4) Overlap test against world static objects (ignoring floor)
 	FVector HalfExt = buildingExtents * 0.5f;
@@ -131,6 +134,35 @@ void ABaseBuilding::PlaceBuilding(const FInputActionValue& value)
 	this->SetActorEnableCollision(true);
 }
 
+bool ABaseBuilding::PrePlacementRule(const FVector& PlacePos)
+{
+	return false;
+}
+
 void ABaseBuilding::CancelBuildingPlacement(const FInputActionValue& value)
 {
+	if (!GetWorld()) return;
+
+	// Were we currently previewing?
+	FTimerManager& TM = GetWorld()->GetTimerManager();
+	const bool bWasPlacing = TM.IsTimerActive(placementTimerHandle);
+
+	if (!bWasPlacing)
+	{
+		// Nothing to cancel
+		return;
+	}
+
+	// Stop the validity tick
+	TM.ClearTimer(placementTimerHandle);
+
+	// We enabled input in EnablePlacing — disable it again
+	if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
+	{
+		DisableInput(PC);
+	}
+
+	// Kill the preview actor
+	// (You can use SetLifeSpan(0.1f) instead if you prefer a deferred destroy)
+	Destroy();
 }

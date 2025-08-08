@@ -28,14 +28,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Building, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> placeAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Building, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> cancelAction;
+
 	UPROPERTY()
 	FTimerHandle placementTimerHandle;
 
 	UPROPERTY()
 	FName requiredTag{ "CanPlaceBuildings" };
-
-	UPROPERTY()
-	bool bCanPlace{ false };
 
 	UPROPERTY()
 	FVector buildingExtents{ FVector(500.5, 500.f, 500.f) };
@@ -48,6 +48,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY()
+	bool bCanPlace{ false };
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -56,6 +59,8 @@ public:
 	void EnablePlacing();
 
 	void CheckPlacementValidity();
+
+	virtual bool PrePlacementRule(const FVector& PlacePos);
 
 	void PlaceBuilding(const FInputActionValue& value);
 

@@ -13,5 +13,8 @@ UCLASS()
 class VINDOLANDA_API AArcherTower : public ABaseBuilding
 {
 	GENERATED_BODY()
+
+protected:
+	virtual bool PrePlacementRule(const FVector& PlacePos) override;
 	
 };
