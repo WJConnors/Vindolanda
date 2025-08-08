@@ -17,9 +17,9 @@ void AVindolandaGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TArray<AActor*> Found;
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("TownCentre"), Found);
-	if (Found.Num() > 0) townCentre = Cast<AStaticMeshActor>(Found[0]);
+	TArray<AActor*> foundTC;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FName("TownCentre"), foundTC);
+	if (foundTC.Num() > 0) townCentre = Cast<AStaticMeshActor>(foundTC[0]);
 
 	if (enemyToSpawn)
 	{
@@ -32,6 +32,40 @@ void AVindolandaGameMode::BeginPlay()
 			spawnInterval
 		);
 	}
+
+	TArray<AActor*> foundLM;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), "LightingManager", foundLM);
+	if (foundLM.Num() > 0)
+	{
+		lightingManager = foundLM[0];
+	}
+}
+
+void AVindolandaGameMode::SpawnKnight()
+{
+	UWorld* world = GetWorld();
+	if (!world || !enemyToSpawn) return;
+
+	UNavigationSystemV1* navSys = UNavigationSystemV1::GetCurrent(world);
+	if (!navSys) return;
+
+	FNavLocation navLoc;
+	FVector origin(0, 0, 0);
+	float radius = 1500.f;
+
+	navSys->GetRandomPointInNavigableRadius(origin, radius, navLoc);
+
+	ABasePawn* knight = GetWorld()->SpawnActorDeferred<ABasePawn>(
+		knightToSpawn, knightSpawnPosition, this, nullptr, 
+		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
+
+	if (!knight) return;
+
+	UGameplayStatics::FinishSpawningActor(knight, knightSpawnPosition);
+
+	knight->SpawnDefaultController();
+
+	knight->MoveToLocation_Implementation(navLoc.Location);
 }
 
 void AVindolandaGameMode::SpawnEnemy()
@@ -65,5 +99,18 @@ void AVindolandaGameMode::SpawnEnemy()
 	if (townCentre)
 	{
 		spawnedEnemy->SetTC(townCentre);
+	}
+}
+
+void AVindolandaGameMode::BeginNight()
+{
+	if (!lightingManager) return;
+
+	static const FName NAME_SetNight(TEXT("SetNight"));
+	if (UFunction* Func = lightingManager->FindFunction(NAME_SetNight))
+	{
+		struct { bool bNight; } Params{ true };
+		lightingManager->ProcessEvent(Func, &Params);
+		bIsNight = true;
 	}
 }

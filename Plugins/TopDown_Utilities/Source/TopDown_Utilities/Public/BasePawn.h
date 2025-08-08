@@ -33,10 +33,12 @@ protected:
     void SelectActor_Implementation(bool bSelect) override;
 
     // INavigableInterface
-    void MoveToLocation_Implementation(const FVector TargetLocation) override;
+    
 
     // IBasePawnInterface
     EPawnType GetPawnType_Implementation() override;
+
+    
 
 public:
     /** How close before we consider the move “complete.” */
@@ -53,6 +55,9 @@ public:
 
     bool IsSelectable() const override { return bSelectable; }
     void SetSelectable(bool b);  // no 'override'—not in any base class
+
+    UFUNCTION(BlueprintCallable, Category = "AI")
+    void MoveToLocation_Implementation(const FVector TargetLocation) override;
 
 private:
     bool bSelectable = true;
