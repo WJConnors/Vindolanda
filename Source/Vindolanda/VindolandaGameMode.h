@@ -57,6 +57,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void SetGoldWidget(UUserWidget* InWidget) { GoldWidget = InWidget; }
 
+	UPROPERTY(BlueprintReadWrite, Category = "UI")
+	TObjectPtr<UUserWidget> ToastWidget;
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void SetToastWidget(UUserWidget* InWidget) { ToastWidget = InWidget; }
+
 protected:
 	virtual void BeginPlay() override;
 

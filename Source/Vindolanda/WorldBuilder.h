@@ -14,7 +14,7 @@ public:
     AWorldBuilder();
 
     /** Adds a brick at GridPos if none exists. Returns true if added. */
-    UFUNCTION(BlueprintCallable, Category = "Bricks")
+    UFUNCTION(BlueprintCallable, Category = "Bricks", meta = (ExpandBoolAsExecs = "ReturnValue"))
     bool AddBrickAt(const FIntVector& GridPos, bool init = false);
 
     /** Removes the brick at GridPos if exists. Returns true if removed. */
