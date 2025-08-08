@@ -116,6 +116,16 @@ void AControllerPawn::Tick(float DeltaTime)
 
 	EdgeScroll();
 
+	// Get current location
+	FVector Location = GetActorLocation();
+
+	// Clamp X and Y between -5000 and 5000
+	Location.X = FMath::Clamp(Location.X, -5000.0f, 5000.0f);
+	Location.Y = FMath::Clamp(Location.Y, -5000.0f, 5000.0f);
+
+	// Apply the clamped location
+	SetActorLocation(Location);
+
 }
 
 // Called to bind functionality to input
