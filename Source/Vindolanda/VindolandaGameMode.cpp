@@ -114,3 +114,28 @@ void AVindolandaGameMode::BeginNight()
 		bIsNight = true;
 	}
 }
+
+int32 AVindolandaGameMode::GetGold() const
+{
+	if (!ResourceTable) return 0;
+	const FResourceData* Row = ResourceTable->FindRow<FResourceData>(GoldRowName, TEXT("GetGold"));
+	return Row ? Row->defaultValue : 0;
+}
+
+void AVindolandaGameMode::SetGold(int32 NewAmount)
+{
+	if (!ResourceTable) return;
+	if (FResourceData* Row = ResourceTable->FindRow<FResourceData>(GoldRowName, TEXT("SetGold")))
+	{
+		Row->defaultValue = FMath::Max(0, NewAmount);
+	}
+}
+
+void AVindolandaGameMode::AddGold(int32 Delta)
+{
+	if (!ResourceTable) return;
+	if (FResourceData* Row = ResourceTable->FindRow<FResourceData>(GoldRowName, TEXT("AddGold")))
+	{
+		Row->defaultValue = FMath::Max(0, Row->defaultValue + Delta);
+	}
+}

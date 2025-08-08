@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "TopDownGameModeBase.h"
+#include "ResourceData.h"
 #include "VindolandaGameMode.generated.h"
 
 /**
@@ -16,6 +17,21 @@ class VINDOLANDA_API AVindolandaGameMode : public ATopDownGameModeBase
 	
 public:
 	AVindolandaGameMode();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Resources")
+	UDataTable* ResourceTable = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Resources")
+	FName GoldRowName = TEXT("Gold");
+
+	UFUNCTION(BlueprintCallable, Category = "Resources")
+	int32 GetGold() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Resources")
+	void SetGold(int32 NewAmount);
+
+	UFUNCTION(BlueprintCallable, Category = "Resources")
+	void AddGold(int32 Delta);
 
 protected:
 	virtual void BeginPlay() override;

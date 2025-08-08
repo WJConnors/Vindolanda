@@ -53,6 +53,7 @@ void ABaseEnemy::BeginPlay()
 		if (FVector::Dist(GetActorLocation(), townCentre->GetActorLocation()) < StopDistance)
 		{
 			MoveToLocation_Implementation(spawnLoc);
+			ShowGold();
 			return true;
 		}
 		return false;

@@ -34,6 +34,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetTauntedBy(AActor* a) { tauntedBy = a; }
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowGold();
+
 protected:
 	virtual void BeginPlay() override;
 
