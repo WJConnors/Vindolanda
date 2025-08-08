@@ -84,6 +84,10 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Day", meta = (AllowPrivateAccess = "true"))
 	void SpawnKnight();
 
+	int wave{ 0 };
+
+	float spawnTimer{ 5 };
+
 private:
 	FTimerHandle spawnTimerHandle;
 

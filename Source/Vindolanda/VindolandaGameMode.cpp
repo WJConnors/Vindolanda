@@ -107,6 +107,7 @@ void AVindolandaGameMode::SpawnEnemy()
 void AVindolandaGameMode::EndNight()
 {
 	ShowWidgetToToggle(true);
+	GetWorldTimerManager().ClearTimer(spawnTimerHandle);
 }
 
 void AVindolandaGameMode::BeginNight()

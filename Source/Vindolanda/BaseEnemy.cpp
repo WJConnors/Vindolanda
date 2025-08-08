@@ -143,6 +143,7 @@ void ABaseEnemy::Damage(float damage)
 	if (health <= 0)
 	{
 		ReturnGold();
+		ReturnGold();
 		EndLife();
 	}
 }

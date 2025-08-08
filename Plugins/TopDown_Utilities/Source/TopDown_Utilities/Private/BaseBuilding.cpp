@@ -132,6 +132,7 @@ void ABaseBuilding::PlaceBuilding(const FInputActionValue& value)
 
 	GetWorld()->GetTimerManager().ClearTimer(placementTimerHandle);
 	this->SetActorEnableCollision(true);
+	TakePayment();
 }
 
 bool ABaseBuilding::PrePlacementRule(const FVector& PlacePos)

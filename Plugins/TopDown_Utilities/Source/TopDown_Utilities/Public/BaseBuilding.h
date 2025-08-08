@@ -51,6 +51,9 @@ protected:
 	UPROPERTY()
 	bool bCanPlace{ false };
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Building", meta = (AllowPrivateAccess = "true"))
+	void TakePayment();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
