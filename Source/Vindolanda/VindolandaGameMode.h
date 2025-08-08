@@ -35,7 +35,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Building")
 	AStaticMeshActor* townCentre{ nullptr };
 
-	UFUNCTION(BlueprintCallable, Category = "Day")
+	UFUNCTION(BlueprintCallable, Category = "Day", meta = (AllowPrivateAccess = "true"))
 	void SpawnKnight();
 
 private:
@@ -51,6 +51,4 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<AActor> lightingManager{ nullptr };
-
-	FVector knightSpawnPositionDefunct{ 1716.213973 , -1844.396172, 60.968751 };
 };
