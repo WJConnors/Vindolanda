@@ -29,7 +29,7 @@ void ABaseEnemy::BeginPlay()
 	State* idle = new State();
 	State* goToTC = new State();
 	State* runAway = new State([&]()->void {
-		this->EndLife();
+		this->HomeTest();
 		});
 	State* taunted = new State([&]()->void {
 		this->Taunted();
@@ -54,6 +54,7 @@ void ABaseEnemy::BeginPlay()
 		{
 			MoveToLocation_Implementation(spawnLoc);
 			ShowGold();
+			hasGold = true;
 			return true;
 		}
 		return false;
@@ -121,11 +122,11 @@ void ABaseEnemy::Taunted()
 	}
 }
 
-void ABaseEnemy::EndLife()
+void ABaseEnemy::HomeTest()
 {
 	if (FVector::Dist(GetActorLocation(), spawnLoc) < StopDistance)
 	{
-		Destroy();
+		EndLife();
 	}	
 }
 
@@ -139,5 +140,11 @@ void ABaseEnemy::Tick(float DeltaTime)
 void ABaseEnemy::Damage(float damage)
 {
 	health -= damage;
-	if (health <= 0) Destroy();
+	if (health <= 0) EndLife();
+}
+
+void ABaseEnemy::EndLife()
+{
+	if (hasGold) ReturnGold();
+	Destroy();
 }

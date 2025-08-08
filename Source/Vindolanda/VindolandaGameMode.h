@@ -21,14 +21,17 @@ class VINDOLANDA_API AVindolandaGameMode : public ATopDownGameModeBase
 public:
 	AVindolandaGameMode();
 
+	UPROPERTY(BlueprintReadOnly, Category = "Resources")
+	int32 Gold = 0;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Resources")
 	UDataTable* ResourceTable = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Resources")
 	FName GoldRowName = TEXT("Gold");
 
-	UFUNCTION(BlueprintCallable, Category = "Resources")
-	int32 GetGold() const;
+	UFUNCTION(BlueprintImplementableEvent, Category = "Resources")
+	void OnGoldChanged(int32 NewGold);
 
 	UFUNCTION(BlueprintCallable, Category = "Resources")
 	void SetGold(int32 NewAmount);
@@ -47,6 +50,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void ShowWidgetToToggle(bool bShow) const;
+
+	UPROPERTY(BlueprintReadWrite, Category = "UI")
+	TObjectPtr<UUserWidget> GoldWidget;
+
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void SetGoldWidget(UUserWidget* InWidget) { GoldWidget = InWidget; }
 
 protected:
 	virtual void BeginPlay() override;

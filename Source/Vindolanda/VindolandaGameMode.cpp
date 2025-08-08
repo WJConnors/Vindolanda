@@ -30,6 +30,17 @@ void AVindolandaGameMode::BeginPlay()
 	{
 		lightingManager = foundLM[0];
 	}
+
+	int32 DefaultGold = 200; // fallback
+	if (ResourceTable)
+	{
+		if (const FResourceData* Row = ResourceTable->FindRow<FResourceData>(GoldRowName, TEXT("Init")))
+		{
+			DefaultGold = Row->defaultValue;
+		}
+	}
+	Gold = DefaultGold;
+	OnGoldChanged(Gold);
 }
 
 void AVindolandaGameMode::SpawnKnight()
@@ -125,29 +136,16 @@ void AVindolandaGameMode::BeginNight()
 	ShowWidgetToToggle(false);
 }
 
-int32 AVindolandaGameMode::GetGold() const
-{
-	if (!ResourceTable) return 0;
-	const FResourceData* Row = ResourceTable->FindRow<FResourceData>(GoldRowName, TEXT("GetGold"));
-	return Row ? Row->defaultValue : 0;
-}
-
 void AVindolandaGameMode::SetGold(int32 NewAmount)
 {
-	if (!ResourceTable) return;
-	if (FResourceData* Row = ResourceTable->FindRow<FResourceData>(GoldRowName, TEXT("SetGold")))
-	{
-		Row->defaultValue = FMath::Max(0, NewAmount);
-	}
+	Gold = FMath::Max(0, NewAmount);
+	OnGoldChanged(Gold);        
 }
 
 void AVindolandaGameMode::AddGold(int32 Delta)
 {
-	if (!ResourceTable) return;
-	if (FResourceData* Row = ResourceTable->FindRow<FResourceData>(GoldRowName, TEXT("AddGold")))
-	{
-		Row->defaultValue = FMath::Max(0, Row->defaultValue + Delta);
-	}
+	Gold = FMath::Max(0, Gold + Delta);
+	OnGoldChanged(Gold);        
 }
 
 void AVindolandaGameMode::ShowWidgetToToggle(bool bShow) const

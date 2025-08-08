@@ -37,6 +37,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowGold();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ReturnGold();
+
+	UPROPERTY(BlueprintReadWrite)
+	bool hasGold{ false };
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -44,6 +50,9 @@ protected:
 	TObjectPtr<AStaticMeshActor> townCentre{ nullptr };
 
 	float StopDistance{ 200.f };
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
+	float goldSteal{ 10.f };
 
 private:
 	FVector spawnLoc;
@@ -59,6 +68,8 @@ private:
 	void Taunted();
 
 	TObjectPtr<AActor> tauntedBy{ nullptr };
+
+	void HomeTest();
 
 	void EndLife();
 	
