@@ -53,6 +53,7 @@ protected:
 	TObjectPtr<AStaticMeshActor> townCentre{ nullptr };
 
 	float StopDistance{ 200.f };
+	float StopDistanceSquared{ 0.f };
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
 	float goldSteal{ 10.f };

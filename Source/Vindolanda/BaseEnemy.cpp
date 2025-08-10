@@ -22,6 +22,8 @@ void ABaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	StopDistanceSquared = FMath::Square(StopDistance);
+
 	spawnLoc = GetActorLocation();
 
 	stateMachine = new StateMachine();
@@ -50,7 +52,7 @@ void ABaseEnemy::BeginPlay()
 		}));
 
 	stateMachine->AddTransition(new StateTransition(goToTC, runAway, [&]()->bool {
-		if (FVector::DistSquared(GetActorLocation(), townCentre->GetActorLocation()) < FMath::Square(StopDistance))
+		if (FVector::DistSquared(GetActorLocation(), townCentre->GetActorLocation()) < StopDistanceSquared)
 		{
 			MoveToLocation_Implementation(spawnLoc);
 			ShowGold();
@@ -124,7 +126,7 @@ void ABaseEnemy::Taunted()
 
 void ABaseEnemy::HomeTest()
 {
-	if (FVector::Dist(GetActorLocation(), spawnLoc) < StopDistance)
+	if (FVector::DistSquared(GetActorLocation(), spawnLoc) < StopDistanceSquared)
 	{
 		EndLife();
 	}	
