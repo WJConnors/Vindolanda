@@ -87,6 +87,8 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Day", meta = (AllowPrivateAccess = "true"))
 	void SpawnKnight();
 
+	//Difficulty variables
+	// Designed to be modified at the top of BeginNight before first use
 	int wave{ 0 };
 
 	float spawnTimer{ 10 };
