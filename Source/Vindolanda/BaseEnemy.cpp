@@ -145,7 +145,7 @@ void ABaseEnemy::Damage(float damage)
 	if (health <= 0)
 	{
 		ReturnGold();
-		ReturnGold();
+		ReturnGold();//Second return rewarding player for killing enemy
 		UpdateKilled();
 		EndLife();
 	}
