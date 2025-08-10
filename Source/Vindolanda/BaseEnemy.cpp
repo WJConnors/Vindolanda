@@ -50,7 +50,7 @@ void ABaseEnemy::BeginPlay()
 		}));
 
 	stateMachine->AddTransition(new StateTransition(goToTC, runAway, [&]()->bool {
-		if (FVector::Dist(GetActorLocation(), townCentre->GetActorLocation()) < StopDistance)
+		if (FVector::DistSquared(GetActorLocation(), townCentre->GetActorLocation()) < FMath::Square(StopDistance))
 		{
 			MoveToLocation_Implementation(spawnLoc);
 			ShowGold();
