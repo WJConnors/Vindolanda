@@ -117,7 +117,13 @@ void AVindolandaGameMode::EndNight()
 		if (A) { A->Destroy(); }
 	}
 
-	bIsNight = false;
+	static const FName NAME_SetNight(TEXT("SetNight"));
+	if (UFunction* Func = lightingManager->FindFunction(NAME_SetNight))
+	{
+		struct { bool bNight; } Params{ false };
+		lightingManager->ProcessEvent(Func, &Params);
+		bIsNight = false;
+	}
 }
 
 void AVindolandaGameMode::BeginNight()
