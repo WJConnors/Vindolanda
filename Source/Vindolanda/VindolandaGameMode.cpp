@@ -175,7 +175,9 @@ void AVindolandaGameMode::AddGold(int32 Delta)
 
 	if (gameOver)
 	{
-		UKismetSystemLibrary::QuitGame(this, nullptr, EQuitPreference::Quit, false);
+		//UKismetSystemLibrary::QuitGame(this, nullptr, EQuitPreference::Quit, false);
+		const FName LevelName(*UGameplayStatics::GetCurrentLevelName(this, true));
+		UGameplayStatics::OpenLevel(this, LevelName);
 	}
 }
 
