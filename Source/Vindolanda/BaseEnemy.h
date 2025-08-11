@@ -8,6 +8,7 @@
 
 class StateMachine;
 class State;
+class AStaticMeshActor;
 
 UCLASS()
 class VINDOLANDA_API ABaseEnemy : public ABasePawn

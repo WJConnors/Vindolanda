@@ -9,6 +9,7 @@
 #include "VindolandaGameMode.generated.h"
 
 class UUserWidget;
+class AStaticMeshActor;
 
 /**
  * 

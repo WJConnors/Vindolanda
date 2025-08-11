@@ -53,7 +53,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pawn")
     EPawnType pawnType{ EPawnType::Villager };
 
-    bool IsSelectable() const override { return bSelectable; }
+    virtual bool IsSelectable() const { return bSelectable; }
     void SetSelectable(bool b);  // no 'override'—not in any base class
 
     UFUNCTION(BlueprintCallable, Category = "AI")
