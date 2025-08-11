@@ -168,19 +168,33 @@ void AVindolandaGameMode::SetGold(int32 NewAmount)
 void AVindolandaGameMode::AddGold(int32 Delta)
 {
 	Gold += Delta;
-	bool gameOver = Gold < 0;
-
 
 	Gold = FMath::Max(0, Gold);
 	OnGoldChanged(Gold);
 
-	if (gameOver)
+}
+
+int AVindolandaGameMode::StealGold(int32 Delta)
+{
+	if (Gold >= Delta)
+	{
+		AddGold(-Delta);
+		return Delta;
+	}
+	else if (Gold > 0)
+	{
+		int stolen = Gold;
+		Gold = 0;
+		OnGoldChanged(Gold);
+		return stolen;
+	}
+	else
 	{
 		UVindolandaSaveLibrary::UpdateHighestRound(wave - 1);
-		//UKismetSystemLibrary::QuitGame(this, nullptr, EQuitPreference::Quit, false);
 		const FName LevelName(*UGameplayStatics::GetCurrentLevelName(this, true));
 		UGameplayStatics::OpenLevel(this, LevelName);
 	}
+	return -1;
 }
 
 void AVindolandaGameMode::ShowWidgetToToggle(bool bShow) const

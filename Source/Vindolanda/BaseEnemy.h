@@ -40,6 +40,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ReturnGold();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void PayBounty();
+
 	UPROPERTY(BlueprintReadWrite)
 	bool hasGold{ false };
 
@@ -56,7 +59,11 @@ protected:
 	float StopDistanceSquared{ 0.f };
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
-	float goldSteal{ 10.f };
+	int goldSteal{ 30 };
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	int goldStolen{ 0 };
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	int bounty{ 10 };
 
 private:
 	FVector spawnLoc;

@@ -39,6 +39,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Resources")
 	void AddGold(int32 Delta);
 
+	UFUNCTION(BlueprintCallable, Category = "Resources")
+	int StealGold(int32 Delta);
+
 	UFUNCTION(BlueprintCallable, Category = "Day")
 	void BeginNight();
 
