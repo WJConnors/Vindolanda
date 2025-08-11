@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/StaticMeshActor.h"
 #include "Blueprint/UserWidget.h"
+#include "VindolandaSaveLibrary.h"
 
 AVindolandaGameMode::AVindolandaGameMode()
 {
@@ -175,6 +176,7 @@ void AVindolandaGameMode::AddGold(int32 Delta)
 
 	if (gameOver)
 	{
+		UVindolandaSaveLibrary::UpdateHighestRound(wave - 1);
 		//UKismetSystemLibrary::QuitGame(this, nullptr, EQuitPreference::Quit, false);
 		const FName LevelName(*UGameplayStatics::GetCurrentLevelName(this, true));
 		UGameplayStatics::OpenLevel(this, LevelName);
